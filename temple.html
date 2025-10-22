@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian Cultural Heritage VR Experience</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <!-- Add WebXR polyfill for better Quest support -->
+    <script src="https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 20px;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .heritage-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .heritage-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .heritage-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .card-image {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .card-content {
+            padding: 20px;
+        }
+        
+        .card-content h3 {
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+            color: #FFD700;
+        }
+        
+        .card-content p {
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .vr-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: #FFD700;
+            color: #1a2a6c;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .vr-button:hover {
+            background: #FFC400;
+        }
+        
+        .vr-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            background: #000;
+        }
+        
+        .close-vr {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 101;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .info-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 600px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 101;
+            text-align: center;
+        }
+        
+        .info-panel h2 {
+            margin: 0 0 10px 0;
+            color: #FFD700;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .nav-button {
+            padding: 10px 20px;
+            background: rgba(255, 215, 0, 0.8);
+            color: #1a2a6c;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .language-toggle {
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .language-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Add loading indicator */
+        .loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 1.5rem;
+            z-index: 102;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .heritage-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loading"></div>
+    
+    <div class="container">
+        <header>
+            <h1>Indian Cultural Heritage VR Experience</h1>
+            <p class="subtitle">Explore India's rich cultural heritage through immersive Virtual Reality</p>
+        </header>
+        
+        <div class="heritage-grid">
+            <div class="heritage-card" data-location="konark">
+                <div class="card-image" style="background-image: url('https://assets.cntraveller.in/photos/65a4ca16f4f38543f111ce6d/16:9/w_5760,h_3240,c_limit/1444924249s')"></div>
+                <div class="card-content">
+                    <h3>Konark Sun Temple</h3>
+                    <p>13th-century CE Sun Temple at Konark, Odisha, in the form of the God Surya's chariot with intricate stone carvings.</p>
+                    <button class="vr-button">Experience in VR</button>
+                </div>
+            </div>
+            
+            <div class="heritage-card" data-location="jagannath">
+                <div class="card-image" style="background-image: url('https://d1msew97rp2nin.cloudfront.net/prod/phool/blogimages/172017492135594.webp')"></div>
+                <div class="card-content">
+                    <h3>Jagannath Temple</h3>
+                    <p>An important Hindu temple dedicated to Jagannath, a form of Vishnu, located in Puri, Odisha.</p>
+                    <button class="vr-button">Experience in VR</button>
+                </div>
+            </div>
+            
+            <div class="heritage-card" data-location="lingaraj">
+                <div class="card-image" style="background-image: url('https://www.easeindiatrip.com/blog/wp-content/uploads/2025/03/Odisha-Bhubaneswar-Lingaraj-Temple-03.jpg')"></div>
+                <div class="card-content">
+                    <h3>Lingaraj Temple</h3>
+                    <p>One of the oldest temples in Bhubaneswar, dedicated to Harihara, a form of Shiva and Vishnu.</p>
+                    <button class="vr-button">Experience in VR</button>
+                </div>
+            </div>
+
+            
+            <div class="heritage-card" data-location="udayagiri">
+                <div class="card-image" style="background-image: url('https://i0.wp.com/compass.rauias.com/wp-content/uploads/2024/07/image-24.png')"></div>
+                <div class="card-content">
+                    <h3>Udayagiri Caves</h3>
+                    <p>Rock-cut caves with historical and archaeological significance, featuring inscriptions and sculptures.</p>
+                    <button class="vr-button">Experience in VR</button>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>This VR experience is compatible with Meta Quest 3 and other VR headsets</p>
+            <p>Experience India's cultural heritage through immersive virtual reality</p>
+        </footer>
+    </div>
+    
+    <div class="vr-container" id="vr-container">
+        <button class="close-vr" id="close-vr">✕</button>
+        <!-- Enhanced A-Frame scene for Quest 3 -->
+        <a-scene 
+            vr-mode-ui="enabled: true" 
+            xr-mode-ui="enabled: true"
+            renderer="colorManagement: true;"
+            background="color: #000"
+            loading-screen="dotsColor: #0080e5; backgroundColor: #000">
+            
+            <!-- Sky with 360 images for each location -->
+            <a-sky id="main-sky" src="puri1.jpg" rotation="0 -90 0"></a-sky>
+            
+            <!-- Navigation arrows for Jagannath Temple -->
+            <a-entity id="jagannath-navigation" visible="false">
+                <a-entity class="nav-arrow" position="-2 0 -3" rotation="0 90 0" data-direction="left"
+                          geometry="primitive: cone; height: 0.3; radiusBottom: 0.1" 
+                          material="color: #FFD700; opacity: 0.8"
+                          animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 500"
+                          animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 500">
+                    <a-text value="←" position="0 0.4 0" align="center" color="#1a2a6c" scale="2 2 2"></a-text>
+                </a-entity>
+                
+                <a-entity class="nav-arrow" position="2 0 -3" rotation="0 -90 0" data-direction="right"
+                          geometry="primitive: cone; height: 0.3; radiusBottom: 0.1" 
+                          material="color: #FFD700; opacity: 0.8"
+                          animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 500"
+                          animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 500">
+                    <a-text value="→" position="0 0.4 0" align="center" color="#1a2a6c" scale="2 2 2"></a-text>
+                </a-entity>
+            </a-entity>
+            
+            <!-- Image counter -->
+            <a-entity id="image-counter" position="0 -1.5 -2" text="align: center; color: white; width: 4" visible="false"></a-entity>
+            
+            <!-- Enhanced camera rig for Quest -->
+            <a-entity id="rig" position="0 0 0">
+                <a-entity camera look-controls position="0 1.6 0" 
+                          wasd-controls="acceleration: 20"
+                          xr-mode-ui="enabled: true">
+                </a-entity>
+                <a-cursor id="cursor" animation__click="property: scale; startEvents: click; from: 0.1 0.1 0.1; to: 1 1 1; dur: 150"></a-cursor>
+            </a-entity>
+        </a-scene>
+        
+        <div class="info-panel" id="info-panel">
+            <h2 id="site-title">Konark Sun Temple</h2>
+            <p id="site-description">Built in the 13th century, this UNESCO World Heritage site is dedicated to the Sun God. The temple is designed as a gigantic chariot with elaborately carved stone wheels, pillars and walls.</p>
+            <div class="navigation">
+                <button class="nav-button" id="prev-site">Previous</button>
+                <button class="nav-button" id="next-site">Next</button>
+                <button class="language-toggle" id="language-toggle">Odia</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize WebXR Polyfill
+        if (navigator.xr === undefined) {
+            new WebXRPolyfill();
+        }
+
+
+        const siteInfo = {
+            konark: {
+                title: "Konark Sun Temple",
+                titleOdia: "କୋଣାର୍କ ସୂର୍ଯ୍ୟ ମନ୍ଦିର",
+                description: "Built in the 13th century, this UNESCO World Heritage site is dedicated to the Sun God. The temple is designed as a gigantic chariot with elaborately carved stone wheels, pillars and walls.",
+                descriptionOdia: "୧୩ଶ ଶତାବ୍ଦୀରେ ନିର୍ମିତ, ଏହି ୟୁନେସ୍କୋ ବିଶ୍ୱ ଐତିହ୍ୟ ସ୍ଥଳୀ ସୂର୍ଯ୍ୟ ଦେବତାଙ୍କୁ ସମର୍ପିତ। ମନ୍ଦିରଟି ଏକ ବିରାଟ ରଥ ଭାବରେ ନକ୍ଷା କରାଯାଇଛି ଯାହାର ପଥର ଚକ, ସ୍ତମ୍ଭ ଓ କାନ୍ଥଗୁଡିକ ଅତ୍ୟନ୍ତ କଳାତ୍ମକ ଭାବରେ ଖୋଦିତ।",
+                image: "konark.jpg",
+                hasNavigation: false
+            },
+            jagannath: {
+                title: "Jagannath Temple, Puri",
+                titleOdia: "ଜଗନ୍ନାଥ ମନ୍ଦିର, ପୁରୀ",
+                description: "One of the Char Dham pilgrimage sites, this temple is famous for its annual Rath Yatra festival. The temple was built in the 12th century and is dedicated to Lord Jagannath, a form of Vishnu.",
+                descriptionOdia: "ଚାରି ଧାମ ତୀର୍ଥସ୍ଥଳ ମଧ୍ୟରୁ ଏକ, ଏହି ମନ୍ଦିର ଏହାର ବାର୍ଷିକ ରଥଯାତ୍ରା ଉତ୍ସବ ପାଇଁ ପ୍ରସିଦ୍ଧ। ମନ୍ଦିରଟି ୧୨ଶ ଶତାବ୍ଦୀରେ ନିର୍ମିତ ହୋଇଥିଲା ଏବଂ ଏହା ଭଗବାନ ଜଗନ୍ନାଥଙ୍କୁ, ଯିଏ ବିଷ୍ଣୁଙ୍କର ଏକ ରୂପ, ସମର୍ପିତ।",
+                image: "puri7.jpg",
+                hasNavigation: true,
+            },
+            lingaraj: {
+                title: "Lingaraj Temple, Bhubaneswar",
+                titleOdia: "ଲିଙ୍ଗରାଜ ମନ୍ଦିର, ଭୁବନେଶ୍ୱର",
+                description: "Dedicated to Lord Shiva, this 11th-century temple is a masterpiece of Kalinga architecture. The temple tower stands at 180 feet and is surrounded by numerous smaller shrines.",
+                descriptionOdia: "ଭଗବାନ ଶିବଙ୍କୁ ସମର୍ପିତ, ଏହି ୧୧ଶ ଶତାବ୍ଦୀର ମନ୍ଦିରଟି କଳିଙ୍ଗ ସ୍ଥାପତ୍ୟର ଏକ ଉତ୍କୃଷ୍ଟ ନମୁନା। ମନ୍ଦିର ଶିଖରଟି ୧୮୦ ଫୁଟ ଉଚ୍ଚ ଏବଂ ଏହା ଅନେକ ଛୋଟ ଛୋଟ ମନ୍ଦିରଦ୍ୱାରା ଘେରା ହୋଇଛି।",
+                image: "lingaraj.jpg",
+                hasNavigation: false
+            },
+            udayagiri: {
+                title: "Udayagiri and Khandagiri Caves",
+                titleOdia: "ଉଦୟଗିରି ଓ ଖଣ୍ଡଗିରି ଗୁମ୍ଫା",
+                description: "These rock-cut caves date back to the 2nd century BCE and were used as residential blocks for Jain monks. The caves feature intricate carvings and inscriptions detailing historical events.",
+                descriptionOdia: "ଏହି ପଥର କଟା ଗୁମ୍ଫାଗୁଡିକ ଖ୍ରୀଷ୍ଟପୂର୍ବ ଦ୍ୱିତୀୟ ଶତାବ୍ଦୀର, ଯାହାକି ଜୈନ ସନ୍ନ୍ୟାସୀମାନଙ୍କ ନିବାସ ସ୍ଥଳୀ ଭାବରେ ବ୍ୟବହୃଏ ହେଉଥିଲା। ଗୁମ୍ଫାଗୁଡିକରେ ଅତ୍ୟନ୍ତ ସୁନ୍ଦର ଖୋଦାଇ କାମ ଏବଂ ଐତିହାସିକ ଘଟଣାବଳୀ ବର୍ଣ୍ଣନା କରୁଥିବା ଲିପି ରହିଛି।",
+                image: "cave1.jpg",
+                hasNavigation: false
+            }
+        };
+        
+        // DOM elements
+        const vrContainer = document.getElementById('vr-container');
+        const closeVr = document.getElementById('close-vr');
+        const infoPanel = document.getElementById('info-panel');
+        const siteTitle = document.getElementById('site-title');
+        const siteDescription = document.getElementById('site-description');
+        const mainSky = document.getElementById('main-sky');
+        const prevButton = document.getElementById('prev-site');
+        const nextButton = document.getElementById('next-site');
+        const languageToggle = document.getElementById('language-toggle');
+        const jagannathNavigation = document.getElementById('jagannath-navigation');
+        const imageCounter = document.getElementById('image-counter');
+        const loading = document.getElementById('loading');
+        
+        let currentSite = 'konark';
+        const siteOrder = ['konark', 'jagannath', 'lingaraj', 'dhauli', 'udayagiri'];
+        let currentLanguage = 'english'; // 'english' or 'odia'
+        
+        // Jagannath Temple navigation variables
+        let currentJagannathImageIndex = 0;
+        
+        // Add event listeners to all VR buttons
+        document.querySelectorAll('.vr-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const card = this.closest('.heritage-card');
+                const location = card.getAttribute('data-location');
+                enterVR(location);
+            });
+        });
+        
+        // Close VR experience
+        closeVr.addEventListener('click', function() {
+            vrContainer.style.display = 'none';
+        });
+        
+        // Navigation buttons
+        prevButton.addEventListener('click', function() {
+            navigateToPrevSite();
+        });
+        
+        nextButton.addEventListener('click', function() {
+            navigateToNextSite();
+        });
+        
+        // Language toggle button
+        languageToggle.addEventListener('click', function() {
+            toggleLanguage();
+        });
+        
+        // Enhanced enterVR function with loading indicator
+        function enterVR(site) {
+            loading.style.display = 'block';
+            
+            setTimeout(() => {
+                currentSite = site;
+                vrContainer.style.display = 'block';
+                changeLocation(site);
+                loading.style.display = 'none';
+            }, 1000);
+        }
+        
+        // Function to change location in VR
+        function changeLocation(site) {
+            // Update skybox
+            mainSky.setAttribute('src', siteInfo[site].image);
+            
+            // Show or hide Jagannath navigation based on site
+            if (site === 'jagannath' && siteInfo[site].hasNavigation) {
+                jagannathNavigation.setAttribute('visible', 'true');
+                imageCounter.setAttribute('visible', 'true');
+                currentJagannathImageIndex = 0;
+                updateJagannathImageCounter();
+            } else {
+                jagannathNavigation.setAttribute('visible', 'false');
+                imageCounter.setAttribute('visible', 'false');
+            }
+            
+            // Update information panel with current language
+            updateSiteInfo();
+        }
+        
+        // Function to update site information based on current language
+        function updateSiteInfo() {
+            if (currentLanguage === 'english') {
+                siteTitle.textContent = siteInfo[currentSite].title;
+                siteDescription.textContent = siteInfo[currentSite].description;
+                languageToggle.textContent = 'Odia';
+            } else {
+                siteTitle.textContent = siteInfo[currentSite].titleOdia;
+                siteDescription.textContent = siteInfo[currentSite].descriptionOdia;
+                languageToggle.textContent = 'English';
+            }
+        }
+        
+        // Function to toggle between English and Odia
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'english' ? 'odia' : 'english';
+            updateSiteInfo();
+        }
+        
+        // Navigation functions
+        function navigateToPrevSite() {
+            const currentIndex = siteOrder.indexOf(currentSite);
+            const prevIndex = (currentIndex - 1 + siteOrder.length) % siteOrder.length;
+            currentSite = siteOrder[prevIndex];
+            changeLocation(currentSite);
+        }
+        
+        function navigateToNextSite() {
+            const currentIndex = siteOrder.indexOf(currentSite);
+            const nextIndex = (currentIndex + 1) % siteOrder.length;
+            currentSite = siteOrder[nextIndex];
+            changeLocation(currentSite);
+        }
+        
+        // Jagannath Temple image navigation
+        function changeJagannathImage(index) {
+            if (index >= 0 && index < siteInfo.jagannath.images.length) {
+                currentJagannathImageIndex = index;
+                mainSky.setAttribute('src', siteInfo.jagannath.images[currentJagannathImageIndex]);
+                updateJagannathImageCounter();
+            }
+        }
+        
+        function updateJagannathImageCounter() {
+            imageCounter.setAttribute('text', 'value', `Image ${currentJagannathImageIndex + 1} of ${siteInfo.jagannath.images.length}`);
+        }
+        
+        // Add click events to Jagannath navigation arrows
+        document.querySelectorAll('.nav-arrow').forEach(arrow => {
+            arrow.addEventListener('click', function() {
+                if (currentSite === 'jagannath') {
+                    const direction = this.getAttribute('data-direction');
+                    if (direction === 'left') {
+                        changeJagannathImage(currentJagannathImageIndex - 1);
+                    } else if (direction === 'right') {
+                        changeJagannathImage(currentJagannathImageIndex + 1);
+                    }
+                }
+            });
+        });
+        
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (vrContainer.style.display === 'block') {
+                if (event.key === 'ArrowLeft') {
+                    if (currentSite === 'jagannath') {
+                        changeJagannathImage(currentJagannathImageIndex - 1);
+                    } else {
+                        navigateToPrevSite();
+                    }
+                } else if (event.key === 'ArrowRight') {
+                    if (currentSite === 'jagannath') {
+                        changeJagannathImage(currentJagannathImageIndex + 1);
+                    } else {
+                        navigateToNextSite();
+                    }
+                } else if (event.key === 'Escape') {
+                    vrContainer.style.display = 'none';
+                } else if (event.key === 'l' || event.key === 'L') {
+                    toggleLanguage();
+                }
+            }
+        });
+
+        // Initialize the first site
+        updateSiteInfo();
+    </script>
+</body>
+</html>
