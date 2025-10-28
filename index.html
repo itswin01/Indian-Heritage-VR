@@ -231,38 +231,6 @@
             <!-- Sky with 360 images for each location -->
             <a-sky id="main-sky" src="puri1.jpg" rotation="0 -90 0"></a-sky>
             
-            <!-- Single English Info Panel - Always Visible -->
-            <a-entity id="vr-info-panel" position="0 1 -2">
-                <!-- Background Panel -->
-                <a-plane position="0 0 0" 
-                        width="2.5" 
-                        height="1.5" 
-                        color="#000000" 
-                        opacity="0.9"
-                        material="shader: flat">
-                </a-plane>
-                
-                <!-- Site Title (English) -->
-                <a-entity id="vr-site-title" 
-                         position="0 0.5 0.01" 
-                         text="align: center; color: #FFD700; width: 2.2; value: Konark Sun Temple">
-                </a-entity>
-                
-                <!-- Site Description (English) -->
-                <a-entity id="vr-site-description" 
-                         position="0 0 0.01" 
-                         text="align: center; color: white; width: 2.2; wrapCount: 40; 
-                               value: Built in the 13th century, this UNESCO World Heritage site is dedicated to the Sun God.">
-                </a-entity>
-                
-                <!-- Instructions -->
-                <a-entity id="vr-instructions" 
-                         position="0 -0.6 0.01" 
-                         text="align: center; color: #00FF00; width: 2.2; 
-                               value: Pull TRIGGER to Next Site">
-                </a-entity>
-            </a-entity>
-
             <!-- Camera with VR controls -->
             <a-entity id="rig" position="0 0 0">
                 <a-entity camera 
@@ -294,18 +262,26 @@
 
         const siteInfo = {
             konark: {
-               image: "konark.jpg",
+                title: "Konark Sun Temple",
+                description: "Built in the 13th century, this UNESCO World Heritage site is dedicated to the Sun God. The temple is designed as a gigantic chariot with elaborately carved stone wheels, pillars and walls.",
+                image: "konark.jpg",
                 hasNavigation: false
             },
             jagannath: {
+                title: "Jagannath Temple, Puri",
+                description: "One of the Char Dham pilgrimage sites, this temple is famous for its annual Rath Yatra festival. The temple was built in the 12th century and is dedicated to Lord Jagannath, a form of Vishnu.",
                 image: "puri3.jpg",
                 hasNavigation: true,
             },
             lingaraj: {
+                title: "Lingaraj Temple, Bhubaneswar",
+                description: "Dedicated to Lord Shiva, this 11th-century temple is a masterpiece of Kalinga architecture. The temple tower stands at 180 feet and is surrounded by numerous smaller shrines.",
                 image: "lingaraj.jpg",
                 hasNavigation: false
             },
             udayagiri: {
+                title: "Udayagiri and Khandagiri Caves",
+                description: "These rock-cut caves date back to the 2nd century BCE and were used as residential blocks for Jain monks. The caves feature intricate carvings and inscriptions detailing historical events.",
                 image: "cave1.jpg",
                 hasNavigation: false
             }
@@ -383,20 +359,6 @@
         function changeLocation(site) {
             // Update skybox
             mainSky.setAttribute('src', siteInfo[site].image);
-            
-            // Update information panel
-            updateSiteInfo();
-        }
-        
-        // Function to update site information
-        function updateSiteInfo() {
-            const vrSiteTitle = document.querySelector('#vr-site-title');
-            const vrSiteDescription = document.querySelector('#vr-site-description');
-            
-            if (vrSiteTitle && vrSiteDescription) {
-                vrSiteTitle.setAttribute('text', 'value', siteInfo[currentSite].title);
-                vrSiteDescription.setAttribute('text', 'value', siteInfo[currentSite].description);
-            }
         }
         
         // Navigation function - ANY trigger pull goes to next site
@@ -405,16 +367,6 @@
             const nextIndex = (currentIndex + 1) % siteOrder.length;
             currentSite = siteOrder[nextIndex];
             changeLocation(currentSite);
-            
-            // Add visual feedback
-            const instructions = document.querySelector('#vr-instructions');
-            if (instructions) {
-                const originalColor = instructions.getAttribute('text').color;
-                instructions.setAttribute('text', 'color', '#FF0000');
-                setTimeout(() => {
-                    instructions.setAttribute('text', 'color', '#00FF00');
-                }, 200);
-            }
         }
         
         // Add keyboard navigation (spacebar to next site)
@@ -435,5 +387,3 @@
     </script>
 </body>
 </html>
-
-
