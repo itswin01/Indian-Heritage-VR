@@ -238,6 +238,11 @@
                          position="0 1.6 0"
                          wasd-controls="enabled: false"
                          xr-mode-ui="enabled: true">
+                    
+                    <!-- Laser pointer for Quest controllers - ADDED BACK FOR TRIGGER -->
+                    <a-entity laser-controls="hand: right" line="color: #0080e5; opacity: 0.5"></a-entity>
+                    <a-entity laser-controls="hand: left" line="color: #0080e5; opacity: 0.5"></a-entity>
+                    
                 </a-entity>
             </a-entity>
         </a-scene>
@@ -291,6 +296,7 @@
         // Enhanced enterVR function
         function enterVR(site) {
             loading.style.display = 'block';
+            loading.textContent = "Loading VR Experience...";
             
             setTimeout(() => {
                 currentSite = site;
@@ -300,7 +306,7 @@
                     initializeVRElements();
                     changeLocation(site);
                     loading.style.display = 'none';
-                }, 100);
+                }, 500);
             }, 1000);
         }
         
@@ -308,41 +314,73 @@
         function initializeVRElements() {
             const scene = document.querySelector('a-scene');
             
-            // Listen for controller trigger events
-            scene.addEventListener('triggerdown', function(event) {
-                if (canClick) {
-                    navigateToNextSite();
-                    // Prevent rapid clicking
-                    canClick = false;
-                    setTimeout(() => {
-                        canClick = true;
-                    }, 1000); // 1 second cooldown
-                }
-            });
+            if (!scene) {
+                console.error('A-Frame scene not found');
+                return;
+            }
             
-            // Also listen for mouse clicks (for desktop testing)
-            scene.addEventListener('click', function(event) {
-                if (canClick) {
-                    navigateToNextSite();
-                    canClick = false;
-                    setTimeout(() => {
-                        canClick = true;
-                    }, 1000);
-                }
+            // Wait for scene to be fully loaded
+            scene.addEventListener('loaded', function() {
+                console.log('A-Frame scene loaded, setting up trigger events');
+                
+                // Listen for controller trigger events
+                scene.addEventListener('triggerdown', function(event) {
+                    console.log('Trigger pressed - navigating to next site');
+                    if (canClick) {
+                        navigateToNextSite();
+                        // Prevent rapid clicking
+                        canClick = false;
+                        setTimeout(() => {
+                            canClick = true;
+                        }, 1000); // 1 second cooldown
+                    }
+                });
+                
+                // Also listen for mouse clicks (for desktop testing)
+                scene.addEventListener('click', function(event) {
+                    console.log('Mouse clicked - navigating to next site');
+                    if (canClick) {
+                        navigateToNextSite();
+                        canClick = false;
+                        setTimeout(() => {
+                            canClick = true;
+                        }, 1000);
+                    }
+                });
+                
+                // Add gamepad event listeners as fallback
+                scene.addEventListener('gamepadbuttondown', function(event) {
+                    if (event.detail.id === 'trigger') {
+                        console.log('Gamepad trigger pressed');
+                        if (canClick) {
+                            navigateToNextSite();
+                            canClick = false;
+                            setTimeout(() => {
+                                canClick = true;
+                            }, 1000);
+                        }
+                    }
+                });
             });
         }
         
         // Function to change location in VR
         function changeLocation(site) {
+            console.log('Changing to site:', site);
             // Update skybox
-            mainSky.setAttribute('src', siteInfo[site].image);
+            if (mainSky && siteInfo[site]) {
+                mainSky.setAttribute('src', siteInfo[site].image);
+                console.log('Skybox updated with:', siteInfo[site].image);
+            }
         }
         
         // Navigation function - ANY trigger pull goes to next site
         function navigateToNextSite() {
+            console.log('Navigating to next site');
             const currentIndex = siteOrder.indexOf(currentSite);
             const nextIndex = (currentIndex + 1) % siteOrder.length;
             currentSite = siteOrder[nextIndex];
+            console.log('New current site:', currentSite);
             changeLocation(currentSite);
         }
         
@@ -350,8 +388,10 @@
         document.addEventListener('keydown', function(event) {
             if (vrContainer.style.display === 'block') {
                 if (event.key === ' ' || event.key === 'Spacebar') {
+                    console.log('Spacebar pressed - navigating to next site');
                     navigateToNextSite();
                 } else if (event.key === 'Escape') {
+                    console.log('Escape pressed - closing VR');
                     vrContainer.style.display = 'none';
                 }
             }
@@ -359,6 +399,7 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded - VR experience ready');
             // Initial setup will happen when VR is entered
         });
     </script>
