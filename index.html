@@ -220,7 +220,7 @@
     <div class="vr-container" id="vr-container">
         <button class="close-vr" id="close-vr">✕</button>
         
-        <!-- A-Frame VR Scene -->
+        <!-- A-Frame VR Scene - Only 360 view remains -->
         <a-scene 
             vr-mode-ui="enabled: true" 
             xr-mode-ui="enabled: true"
@@ -238,17 +238,6 @@
                          position="0 1.6 0"
                          wasd-controls="enabled: false"
                          xr-mode-ui="enabled: true">
-                    
-                    <!-- Laser pointer for Quest controllers -->
-                    <a-entity laser-controls="hand: right" line="color: #0080e5; opacity: 0.5"></a-entity>
-                    <a-entity laser-controls="hand: left" line="color: #0080e5; opacity: 0.5"></a-entity>
-                    
-                    <!-- Simple cursor -->
-                    <a-entity cursor="fuse: false; rayOrigin: mouse"
-                             position="0 0 -1"
-                             geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
-                             material="color: #0080e5; shader: flat">
-                    </a-entity>
                 </a-entity>
             </a-entity>
         </a-scene>
@@ -262,28 +251,16 @@
 
         const siteInfo = {
             konark: {
-                title: "Konark Sun Temple",
-                description: "Built in the 13th century, this UNESCO World Heritage site is dedicated to the Sun God. The temple is designed as a gigantic chariot with elaborately carved stone wheels, pillars and walls.",
-                image: "konark.jpg",
-                hasNavigation: false
+                image: "konark.jpg"
             },
             jagannath: {
-                title: "Jagannath Temple, Puri",
-                description: "One of the Char Dham pilgrimage sites, this temple is famous for its annual Rath Yatra festival. The temple was built in the 12th century and is dedicated to Lord Jagannath, a form of Vishnu.",
-                image: "puri3.jpg",
-                hasNavigation: true,
+                image: "puri3.jpg"
             },
             lingaraj: {
-                title: "Lingaraj Temple, Bhubaneswar",
-                description: "Dedicated to Lord Shiva, this 11th-century temple is a masterpiece of Kalinga architecture. The temple tower stands at 180 feet and is surrounded by numerous smaller shrines.",
-                image: "lingaraj.jpg",
-                hasNavigation: false
+                image: "lingaraj.jpg"
             },
             udayagiri: {
-                title: "Udayagiri and Khandagiri Caves",
-                description: "These rock-cut caves date back to the 2nd century BCE and were used as residential blocks for Jain monks. The caves feature intricate carvings and inscriptions detailing historical events.",
-                image: "cave1.jpg",
-                hasNavigation: false
+                image: "cave1.jpg"
             }
         };
         
