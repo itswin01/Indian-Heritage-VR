@@ -231,15 +231,6 @@
             <!-- Sky with 360 images for each location -->
             <a-sky id="main-sky" src="puri1.jpg" rotation="0 -90 0"></a-sky>
             
-            <!-- Simple Clickable Area - Click ANYWHERE to navigate -->
-            <a-entity id="click-area"
-                     geometry="primitive: plane; width: 100; height: 100" 
-                     material="color: #0000FF; opacity: 0.0; transparent: true"
-                     position="0 0 -5"
-                     class="clickable"
-                     data-click-action="next-site">
-            </a-entity>
-            
             <!-- 3D Info Panel - Always Visible -->
             <a-entity id="vr-info-panel" position="0 1.5 -2">
                 <!-- Background Panel -->
@@ -268,11 +259,11 @@
                 <a-entity id="vr-instructions" 
                          position="0 -0.6 0.01" 
                          text="align: center; color: #00FF00; width: 2.2; 
-                               value: Click TRIGGER to Next Site">
+                               value: Pull TRIGGER to Next Site">
                 </a-entity>
             </a-entity>
-            
-            <!-- Camera with proper VR controls -->
+
+            <!-- Camera with VR controls -->
             <a-entity id="rig" position="0 0 0">
                 <a-entity camera 
                          look-controls 
@@ -290,9 +281,6 @@
                              geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
                              material="color: #0080e5; shader: flat">
                     </a-entity>
-                    
-                    <!-- Raycaster for VR controllers -->
-                    <a-entity raycaster="objects: .clickable; far: 100"></a-entity>
                 </a-entity>
             </a-entity>
         </a-scene>
@@ -348,6 +336,7 @@
         let currentSite = 'konark';
         const siteOrder = ['konark', 'jagannath', 'lingaraj', 'udayagiri'];
         let currentLanguage = 'english';
+        let canClick = true;
         
         // Add event listeners to all VR buttons
         document.querySelectorAll('.vr-button').forEach(button => {
@@ -381,13 +370,30 @@
         
         // Initialize VR elements after A-Frame loads
         function initializeVRElements() {
-            // Add click event to the entire clickable area
-            const clickArea = document.querySelector('#click-area');
-            if (clickArea) {
-                clickArea.addEventListener('click', function() {
+            const scene = document.querySelector('a-scene');
+            
+            // Listen for controller trigger events
+            scene.addEventListener('triggerdown', function(event) {
+                if (canClick) {
                     navigateToNextSite();
-                });
-            }
+                    // Prevent rapid clicking
+                    canClick = false;
+                    setTimeout(() => {
+                        canClick = true;
+                    }, 1000); // 1 second cooldown
+                }
+            });
+            
+            // Also listen for mouse clicks (for desktop testing)
+            scene.addEventListener('click', function(event) {
+                if (canClick) {
+                    navigateToNextSite();
+                    canClick = false;
+                    setTimeout(() => {
+                        canClick = true;
+                    }, 1000);
+                }
+            });
         }
         
         // Function to change location in VR
@@ -415,18 +421,22 @@
             }
         }
         
-        // Function to toggle between English and Odia
-        function toggleLanguage() {
-            currentLanguage = currentLanguage === 'english' ? 'odia' : 'english';
-            updateSiteInfo();
-        }
-        
-        // Navigation function - Click ANYWHERE goes to next site
+        // Navigation function - ANY trigger pull goes to next site
         function navigateToNextSite() {
             const currentIndex = siteOrder.indexOf(currentSite);
             const nextIndex = (currentIndex + 1) % siteOrder.length;
             currentSite = siteOrder[nextIndex];
             changeLocation(currentSite);
+            
+            // Add visual feedback
+            const instructions = document.querySelector('#vr-instructions');
+            if (instructions) {
+                const originalColor = instructions.getAttribute('text').color;
+                instructions.setAttribute('text', 'color', '#FF0000');
+                setTimeout(() => {
+                    instructions.setAttribute('text', 'color', '#00FF00');
+                }, 200);
+            }
         }
         
         // Add keyboard navigation (spacebar to next site)
@@ -437,7 +447,8 @@
                 } else if (event.key === 'Escape') {
                     vrContainer.style.display = 'none';
                 } else if (event.key === 'l' || event.key === 'L') {
-                    toggleLanguage();
+                    currentLanguage = currentLanguage === 'english' ? 'odia' : 'english';
+                    updateSiteInfo();
                 }
             }
         });
