@@ -6,6 +6,8 @@
     <title>Indian Cultural Heritage VR Experience</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js"></script>
+    <!-- Import Google Fonts for Odia support -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Oriya:wght@400;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -228,6 +230,11 @@
             background="color: #000"
             loading-screen="dotsColor: #0080e5; backgroundColor: #000">
             
+            <!-- Add font assets -->
+            <a-assets>
+                <a-asset-item id="notoOdiaFont" src="https://fonts.gstatic.com/s/notosansoriya/v30/AABC0ZN89u9vf7YBERfK-ZMq6oA3MKQ.woff2"></a-asset-item>
+            </a-assets>
+            
             <!-- Sky with 360 images for each location -->
             <a-sky id="main-sky" src="puri1.jpg" rotation="0 -90 0"></a-sky>
             
@@ -277,20 +284,20 @@
                     
                     <!-- Odia Label -->
                     <a-entity position="0 0.45 0.01" 
-                             text="align: center; color: #FFD700; width: 1.8; value: ଓଡ଼ିଆ">
+                             text="align: center; color: #FFD700; width: 1.8; value: ଓଡ଼ିଆ; font: #notoOdiaFont">
                     </a-entity>
                     
                     <!-- Site Title (Odia) -->
                     <a-entity id="vr-site-title-odia" 
                              position="0 0.2 0.01" 
-                             text="align: center; color: #FFD700; width: 1.8; wrapCount: 25; value: କୋଣାର୍କ ସୂର୍ଯ୍ୟ ମନ୍ଦିର">
+                             text="align: center; color: #FFD700; width: 1.8; wrapCount: 25; value: କୋଣାର୍କ ସୂର୍ଯ୍ୟ ମନ୍ଦିର; font: #notoOdiaFont">
                     </a-entity>
                     
                     <!-- Site Description (Odia) -->
                     <a-entity id="vr-site-description-odia" 
                              position="0 -0.2 0.01" 
                              text="align: center; color: white; width: 1.8; wrapCount: 30; 
-                                   value: ୧୩ଶ ଶତାବ୍ଦୀରେ ନିର୍ମିତ, ଏହି ୟୁନେସ୍କୋ ବିଶ୍ୱ ଐତିହ୍ୟ ସ୍ଥଳୀ ସୂର୍ଯ୍ୟ ଦେବତାଙ୍କୁ ସମର୍ପିତ।">
+                                   value: ୧୩ଶ ଶତାବ୍ଦୀରେ ନିର୍ମିତ, ଏହି ୟୁନେସ୍କୋ ବିଶ୍ୱ ଐତିହ୍ୟ ସ୍ଥଳୀ ସୂର୍ଯ୍ୟ ଦେବତାଙ୍କୁ ସମର୍ପିତ।; font: #notoOdiaFont">
                     </a-entity>
                 </a-entity>
                 
