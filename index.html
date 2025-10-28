@@ -6,8 +6,6 @@
     <title>Indian Cultural Heritage VR Experience</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js"></script>
-    <!-- Import Google Fonts for Odia support -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Oriya:wght@400;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -230,81 +228,37 @@
             background="color: #000"
             loading-screen="dotsColor: #0080e5; backgroundColor: #000">
             
-            <!-- Add font assets with CORRECT URL -->
-            <a-assets>
-                <a-asset-item id="notoOdiaFont" src="https://fonts.gstatic.com/s/notosansoriya/v30/AABC0ZN89u9vf7YBERfK-ZMq6oA3MKQ.woff2"></a-asset-item>
-            </a-assets>
-            
             <!-- Sky with 360 images for each location -->
             <a-sky id="main-sky" src="puri1.jpg" rotation="0 -90 0"></a-sky>
             
-            <!-- Dual Language Info Panel - Always Visible -->
+            <!-- Single English Info Panel - Always Visible -->
             <a-entity id="vr-info-panel" position="0 1 -2">
+                <!-- Background Panel -->
+                <a-plane position="0 0 0" 
+                        width="2.5" 
+                        height="1.5" 
+                        color="#000000" 
+                        opacity="0.9"
+                        material="shader: flat">
+                </a-plane>
                 
-                <!-- ENGLISH Panel -->
-                <a-entity id="english-panel" position="-1.3 0.8 0">
-                    <!-- Background Panel -->
-                    <a-plane position="0 0 0" 
-                            width="2" 
-                            height="1" 
-                            color="#000000" 
-                            opacity="0.9"
-                            material="shader: flat">
-                    </a-plane>
-                    
-                    <!-- English Label -->
-                    <a-entity position="0 0.45 0.01" 
-                             text="align: center; color: #FFD700; width: 1.8; value: ENGLISH">
-                    </a-entity>
-                    
-                    <!-- Site Title (English) -->
-                    <a-entity id="vr-site-title-en" 
-                             position="0 0.2 0.01" 
-                             text="align: center; color: #FFD700; width: 1.8; wrapCount: 25; value: Konark Sun Temple">
-                    </a-entity>
-                    
-                    <!-- Site Description (English) -->
-                    <a-entity id="vr-site-description-en" 
-                             position="0 -0.2 0.01" 
-                             text="align: center; color: white; width: 1.8; wrapCount: 30; 
-                                   value: Built in the 13th century, this UNESCO World Heritage site is dedicated to the Sun God.">
-                    </a-entity>
+                <!-- Site Title (English) -->
+                <a-entity id="vr-site-title" 
+                         position="0 0.5 0.01" 
+                         text="align: center; color: #FFD700; width: 2.2; value: Konark Sun Temple">
                 </a-entity>
                 
-                <!-- ODIA Panel -->
-                <a-entity id="odia-panel" position="1.3 0.8 0">
-                    <!-- Background Panel -->
-                    <a-plane position="0 0 0" 
-                            width="2" 
-                            height="1" 
-                            color="#000000" 
-                            opacity="0.9"
-                            material="shader: flat">
-                    </a-plane>
-                    
-                    <!-- Odia Label -->
-                    <a-entity position="0 0.45 0.01" 
-                             text="align: center; color: #FFD700; width: 1.8; value: ଓଡ଼ିଆ; font: https://fonts.gstatic.com/s/notosansoriya/v30/AABC0ZN89u9vf7YBERfK-ZMq6oA3MKQ.woff2">
-                    </a-entity>
-                    
-                    <!-- Site Title (Odia) -->
-                    <a-entity id="vr-site-title-odia" 
-                             position="0 0.2 0.01" 
-                             text="align: center; color: #FFD700; width: 1.8; wrapCount: 25; value: କୋଣାର୍କ ସୂର୍ଯ୍ୟ ମନ୍ଦିର; font: https://fonts.gstatic.com/s/notosansoriya/v30/AABC0ZN89u9vf7YBERfK-ZMq6oA3MKQ.woff2">
-                    </a-entity>
-                    
-                    <!-- Site Description (Odia) -->
-                    <a-entity id="vr-site-description-odia" 
-                             position="0 -0.2 0.01" 
-                             text="align: center; color: white; width: 1.8; wrapCount: 30; 
-                                   value: ୧୩ଶ ଶତାବ୍ଦୀରେ ନିର୍ମିତ, ଏହି ୟୁନେସ୍କୋ ବିଶ୍ୱ ଐତିହ୍ୟ ସ୍ଥଳୀ ସୂର୍ଯ୍ୟ ଦେବତାଙ୍କୁ ସମର୍ପିତ।; font: https://fonts.gstatic.com/s/notosansoriya/v30/AABC0ZN89u9vf7YBERfK-ZMq6oA3MKQ.woff2">
-                    </a-entity>
+                <!-- Site Description (English) -->
+                <a-entity id="vr-site-description" 
+                         position="0 0 0.01" 
+                         text="align: center; color: white; width: 2.2; wrapCount: 40; 
+                               value: Built in the 13th century, this UNESCO World Heritage site is dedicated to the Sun God.">
                 </a-entity>
                 
-                <!-- Instructions (Below both panels) -->
+                <!-- Instructions -->
                 <a-entity id="vr-instructions" 
-                         position="0 -0.8 0" 
-                         text="align: center; color: #00FF00; width: 3; 
+                         position="0 -0.6 0.01" 
+                         text="align: center; color: #00FF00; width: 2.2; 
                                value: Pull TRIGGER to Next Site">
                 </a-entity>
             </a-entity>
@@ -341,33 +295,25 @@
         const siteInfo = {
             konark: {
                 title: "Konark Sun Temple",
-                titleOdia: "କୋଣାର୍କ ସୂର୍ଯ୍ୟ ମନ୍ଦିର",
                 description: "Built in the 13th century, this UNESCO World Heritage site is dedicated to the Sun God. The temple is designed as a gigantic chariot with elaborately carved stone wheels, pillars and walls.",
-                descriptionOdia: "୧୩ଶ ଶତାବ୍ଦୀରେ ନିର୍ମିତ, ଏହି ୟୁନେସ୍କୋ ବିଶ୍ୱ ଐତିହ୍ୟ ସ୍ଥଳୀ ସୂର୍ଯ୍ୟ ଦେବତାଙ୍କୁ ସମର୍ପିତ। ମନ୍ଦିରଟି ଏକ ବିରାଟ ରଥ ଭାବରେ ନକ୍ଷା କରାଯାଇଛି ଯାହାର ପଥର ଚକ, ସ୍ତମ୍ଭ ଓ କାନ୍ଥଗୁଡିକ ଅତ୍ୟନ୍ତ କଳାତ୍ମକ ଭାବରେ ଖୋଦିତ।",
                 image: "konark.jpg",
                 hasNavigation: false
             },
             jagannath: {
                 title: "Jagannath Temple, Puri",
-                titleOdia: "ଜଗନ୍ନାଥ ମନ୍ଦିର, ପୁରୀ",
                 description: "One of the Char Dham pilgrimage sites, this temple is famous for its annual Rath Yatra festival. The temple was built in the 12th century and is dedicated to Lord Jagannath, a form of Vishnu.",
-                descriptionOdia: "ଚାରି ଧାମ ତୀର୍ଥସ୍ଥଳ ମଧ୍ୟରୁ ଏକ, ଏହି ମନ୍ଦିର ଏହାର ବାର୍ଷିକ ରଥଯାତ୍ରା ଉତ୍ସବ ପାଇଁ ପ୍ରସିଦ୍ଧ। ମନ୍ଦିରଟି ୧୨ଶ ଶତାବ୍ଦୀରେ ନିର୍ମିତ ହୋଇଥିଲା ଏବଂ ଏହା ଭଗବାନ ଜଗନ୍ନାଥଙ୍କୁ, ଯିଏ ବିଷ୍ଣୁଙ୍କର ଏକ ରୂପ, ସମର୍ପିତ।",
                 image: "puri7.jpg",
                 hasNavigation: true,
             },
             lingaraj: {
                 title: "Lingaraj Temple, Bhubaneswar",
-                titleOdia: "ଲିଙ୍ଗରାଜ ମନ୍ଦିର, ଭୁବନେଶ୍ୱର",
                 description: "Dedicated to Lord Shiva, this 11th-century temple is a masterpiece of Kalinga architecture. The temple tower stands at 180 feet and is surrounded by numerous smaller shrines.",
-                descriptionOdia: "ଭଗବାନ ଶିବଙ୍କୁ ସମର୍ପିତ, ଏହି ୧୧ଶ ଶତାବ୍ଦୀର ମନ୍ଦିରଟି କଳିଙ୍ଗ ସ୍ଥାପତ୍ୟର ଏକ ଉତ୍କୃଷ୍ଟ ନମୁନା। ମନ୍ଦିର ଶିଖରଟି ୧୮୦ ଫୁଟ ଉଚ୍ଚ ଏବଂ ଏହା ଅନେକ ଛୋଟ ଛୋଟ ମନ୍ଦିରଦ୍ୱାରା ଘେରା ହୋଇଛି।",
                 image: "lingaraj.jpg",
                 hasNavigation: false
             },
             udayagiri: {
                 title: "Udayagiri and Khandagiri Caves",
-                titleOdia: "ଉଦୟଗିରି ଓ ଖଣ୍ଡଗିରି ଗୁମ୍ଫା",
                 description: "These rock-cut caves date back to the 2nd century BCE and were used as residential blocks for Jain monks. The caves feature intricate carvings and inscriptions detailing historical events.",
-                descriptionOdia: "ଏହି ପଥର କଟା ଗୁମ୍ଫାଗୁଡିକ ଖ୍ରୀଷ୍ଟପୂର୍ବ ଦ୍ୱିତୀୟ ଶତାବ୍ଦୀର, ଯାହାକି ଜୈନ ସନ୍ନ୍ୟାସୀମାନଙ୍କ ନିବାସ ସ୍ଥଳୀ ଭାବରେ ବ୍ୟବହୃଏ ହେଉଥିଲା। ଗୁମ୍ଫାଗୁଡିକରେ ଅତ୍ୟନ୍ତ ସୁନ୍ଦର ଖୋଦାଇ କାମ ଏବଂ ଐତିହାସିକ ଘଟଣାବଳୀ ବର୍ଣ୍ଣନା କରୁଥିବା ଲିପି ରହିଛି।",
                 image: "cave1.jpg",
                 hasNavigation: false
             }
@@ -446,28 +392,18 @@
             // Update skybox
             mainSky.setAttribute('src', siteInfo[site].image);
             
-            // Update information panel with current language
+            // Update information panel
             updateSiteInfo();
         }
         
-        // Function to update site information for BOTH languages
+        // Function to update site information
         function updateSiteInfo() {
-            // Update English text
-            const vrSiteTitleEn = document.querySelector('#vr-site-title-en');
-            const vrSiteDescriptionEn = document.querySelector('#vr-site-description-en');
+            const vrSiteTitle = document.querySelector('#vr-site-title');
+            const vrSiteDescription = document.querySelector('#vr-site-description');
             
-            // Update Odia text
-            const vrSiteTitleOdia = document.querySelector('#vr-site-title-odia');
-            const vrSiteDescriptionOdia = document.querySelector('#vr-site-description-odia');
-            
-            if (vrSiteTitleEn && vrSiteDescriptionEn && vrSiteTitleOdia && vrSiteDescriptionOdia) {
-                // Update English
-                vrSiteTitleEn.setAttribute('text', 'value', siteInfo[currentSite].title);
-                vrSiteDescriptionEn.setAttribute('text', 'value', siteInfo[currentSite].description);
-                
-                // Update Odia
-                vrSiteTitleOdia.setAttribute('text', 'value', siteInfo[currentSite].titleOdia);
-                vrSiteDescriptionOdia.setAttribute('text', 'value', siteInfo[currentSite].descriptionOdia);
+            if (vrSiteTitle && vrSiteDescription) {
+                vrSiteTitle.setAttribute('text', 'value', siteInfo[currentSite].title);
+                vrSiteDescription.setAttribute('text', 'value', siteInfo[currentSite].description);
             }
         }
         
