@@ -6,6 +6,8 @@
     <title>Indian Cultural Heritage VR Experience</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js"></script>
+    <!-- Add movement controls for VR -->
+    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -227,7 +229,7 @@
             renderer="colorManagement: true;"
             background="color: #000"
             loading-screen="dotsColor: #0080e5; backgroundColor: #000"
-            cursor="rayOrigin: mouse">
+            movement-controls="fly: false; speed: 2">
             
             <!-- Sky with 360 images for each location -->
             <a-sky id="main-sky" src="puri1.jpg" rotation="0 -90 0"></a-sky>
@@ -321,11 +323,16 @@
             <!-- Image counter -->
             <a-entity id="image-counter" position="0 -1.5 -2" text="align: center; color: white; width: 4" visible="false"></a-entity>
             
-            <!-- Enhanced camera rig for Quest with proper raycaster -->
-            <a-entity id="rig" position="0 0 0">
-                <a-entity camera look-controls position="0 1.6 0" 
-                          wasd-controls="acceleration: 20"
-                          xr-mode-ui="enabled: true">
+            <!-- Enhanced camera rig with proper VR movement controls -->
+            <a-entity id="rig" 
+                     movement-controls="speed: 2; fly: false"
+                     position="0 0 0">
+                <a-entity camera 
+                         look-controls 
+                         position="0 1.6 0" 
+                         wasd-controls="enabled: false"
+                         xr-mode-ui="enabled: true">
+                    
                     <!-- Laser pointer for Quest controllers -->
                     <a-entity laser-controls="hand: right" line="color: #0080e5; opacity: 0.5"></a-entity>
                     <a-entity laser-controls="hand: left" line="color: #0080e5; opacity: 0.5"></a-entity>
@@ -338,8 +345,14 @@
                     </a-entity>
                     
                     <!-- Raycaster for VR controllers -->
-                    <a-entity raycaster="objects: .clickable; far: 100" line="color: #0080e5; opacity: 0.5"></a-entity>
+                    <a-entity raycaster="objects: .clickable; far: 100"></a-entity>
                 </a-entity>
+            </a-entity>
+
+            <!-- Movement instructions for VR users -->
+            <a-entity id="movement-instructions" 
+                     position="0 0.5 -2" 
+                     text="align: center; color: white; width: 3; value: Use thumbsticks to move around; visible: false">
             </a-entity>
         </a-scene>
     </div>
@@ -379,7 +392,7 @@
                 title: "Udayagiri and Khandagiri Caves",
                 titleOdia: "ଉଦୟଗିରି ଓ ଖଣ୍ଡଗିରି ଗୁମ୍ଫା",
                 description: "These rock-cut caves date back to the 2nd century BCE and were used as residential blocks for Jain monks. The caves feature intricate carvings and inscriptions detailing historical events.",
-                descriptionOdia: "ଏହି ପଥର କଟା ଗୁମ୍ଫାଗୁଡିକ ଖ୍ରୀଷ୍ଟପୂର୍ବ ଦ୍ୱିତୀୟ ଶତାବ୍ଦୀର, ଯାହାକି ଜୈନ ସନ୍ନ୍ୟାସୀମାନଙ୍କ ନିବାସ ସ୍ଥଳୀ ଭାବରେ ବ୍ୟବହୃଏ ହେଉଥିଲା। ଗୁମ୍ଫାଗୁଡିକରେ ଅତ୍ୟନ୍ତ ସୁନ୍ଦର ଖୋଦାଇ କାମ ଏବଂ ଐତିହାସିକ ଘଟଣାବଳୀ ବର୍ଣ୍ଣନା କରୁଥିବା ଲିପି ରହିଛି।",
+                descriptionOdia: "ଏହି ପଥର କଟା ଗୁମ୍ଫାଗୁଡିକ ଖ୍ରୀଷ୍ଟପୂର୍ବ ଦ୍ୱିତୀୟ ଶଏାବ୍ଦୀର, ଯାହାକି ଜୈନ ସନ୍ନ୍ୟାସୀମାନଙ୍କ ନିବାସ ସ୍ଥଳୀ ଭାବରେ ବ୍ୟବହୃଏ ହେଉଥିଲା। ଗୁମ୍ଫାଗୁଡିକରେ ଅତ୍ୟନ୍ତ ସୁନ୍ଦର ଖୋଦାଇ କାମ ଏବଂ ଐତିହାସିକ ଘଟଣାବଳୀ ବର୍ଣ୍ଣନା କରୁଥିବା ଲିପି ରହିଛି।",
                 image: "cave1.jpg",
                 hasNavigation: false
             }
@@ -453,21 +466,6 @@
                     toggleLanguage();
                 });
             }
-            
-            // Jagannath navigation arrows
-            document.querySelectorAll('.nav-arrow').forEach(arrow => {
-                arrow.addEventListener('click', function() {
-                    if (currentSite === 'jagannath') {
-                        const direction = this.getAttribute('data-direction');
-                        if (direction === 'left') {
-                            // Add your image navigation logic here
-                            console.log('Left arrow clicked');
-                        } else if (direction === 'right') {
-                            console.log('Right arrow clicked');
-                        }
-                    }
-                });
-            });
         }
         
         // Function to change location in VR
