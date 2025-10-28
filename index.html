@@ -133,64 +133,6 @@
             font-size: 1.5rem;
             cursor: pointer;
         }
-        
-        .info-panel {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            max-width: 600px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            z-index: 101;
-            text-align: center;
-            display: none; /* Hidden by default in VR */
-        }
-        
-        .info-panel.visible {
-            display: block; /* Show when toggled */
-        }
-        
-        .info-panel h2 {
-            margin: 0 0 10px 0;
-            color: #FFD700;
-        }
-        
-        .navigation {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .nav-button {
-            padding: 10px 20px;
-            background: rgba(255, 215, 0, 0.8);
-            color: #1a2a6c;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .language-toggle {
-            padding: 8px 15px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-left: 10px;
-            transition: background 0.3s ease;
-        }
-
-        .language-toggle:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
 
         /* Add loading indicator */
         .loading {
@@ -301,6 +243,68 @@
                 <a-text value="Info" position="0 0 0.01" align="center" color="#1a2a6c" width="2"></a-text>
             </a-entity>
             
+            <!-- 3D Info Panel (initially hidden) -->
+            <a-entity id="vr-info-panel" visible="false" position="0 0 -2">
+                <!-- Background Panel -->
+                <a-plane id="info-background" 
+                        position="0 0.5 0" 
+                        width="2.5" 
+                        height="1.8" 
+                        color="#000000" 
+                        opacity="0.8"
+                        material="shader: flat">
+                </a-plane>
+                
+                <!-- Site Title -->
+                <a-entity id="vr-site-title" 
+                         position="0 1.1 -1.9" 
+                         text="align: center; color: #FFD700; width: 2.2; value: Konark Sun Temple">
+                </a-entity>
+                
+                <!-- Site Description -->
+                <a-entity id="vr-site-description" 
+                         position="0 0.6 -1.9" 
+                         text="align: center; color: white; width: 2.2; wrapCount: 40; 
+                               value: Built in the 13th century, this UNESCO World Heritage site is dedicated to the Sun God.">
+                </a-entity>
+                
+                <!-- Navigation Buttons -->
+                <a-entity id="vr-navigation" position="0 0 -1.9">
+                    <!-- Previous Button -->
+                    <a-entity class="vr-nav-button" 
+                             id="vr-prev-button"
+                             position="-0.6 -0.3 0" 
+                             geometry="primitive: box; width: 0.5; height: 0.2; depth: 0.05" 
+                             material="color: #FFD700; shader: flat"
+                             animation__hover="property: scale; to: 1.1 1.1 1.1; startEvents: mouseenter; dur: 200"
+                             animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200">
+                        <a-text value="Previous" position="0 0 0.03" align="center" color="#1a2a6c" width="1.5"></a-text>
+                    </a-entity>
+                    
+                    <!-- Next Button -->
+                    <a-entity class="vr-nav-button" 
+                             id="vr-next-button"
+                             position="0.6 -0.3 0" 
+                             geometry="primitive: box; width: 0.5; height: 0.2; depth: 0.05" 
+                             material="color: #FFD700; shader: flat"
+                             animation__hover="property: scale; to: 1.1 1.1 1.1; startEvents: mouseenter; dur: 200"
+                             animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200">
+                        <a-text value="Next" position="0 0 0.03" align="center" color="#1a2a6c" width="1.5"></a-text>
+                    </a-entity>
+                    
+                    <!-- Language Toggle Button -->
+                    <a-entity class="vr-nav-button" 
+                             id="vr-language-button"
+                             position="0 -0.6 0" 
+                             geometry="primitive: box; width: 0.8; height: 0.2; depth: 0.05" 
+                             material="color: #666666; shader: flat"
+                             animation__hover="property: scale; to: 1.1 1.1 1.1; startEvents: mouseenter; dur: 200"
+                             animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200">
+                        <a-text value="Odia" position="0 0 0.03" align="center" color="white" width="1.5"></a-text>
+                    </a-entity>
+                </a-entity>
+            </a-entity>
+            
             <!-- Navigation arrows for Jagannath Temple -->
             <a-entity id="jagannath-navigation" visible="false">
                 <a-entity class="nav-arrow" position="-2 0 -3" rotation="0 90 0" data-direction="left"
@@ -332,16 +336,6 @@
                 <a-cursor id="cursor" animation__click="property: scale; startEvents: click; from: 0.1 0.1 0.1; to: 1 1 1; dur: 150"></a-cursor>
             </a-entity>
         </a-scene>
-        
-        <div class="info-panel" id="info-panel">
-            <h2 id="site-title">Konark Sun Temple</h2>
-            <p id="site-description">Built in the 13th century, this UNESCO World Heritage site is dedicated to the Sun God. The temple is designed as a gigantic chariot with elaborately carved stone wheels, pillars and walls.</p>
-            <div class="navigation">
-                <button class="nav-button" id="prev-site">Previous</button>
-                <button class="nav-button" id="next-site">Next</button>
-                <button class="language-toggle" id="language-toggle">Odia</button>
-            </div>
-        </div>
     </div>
     
     <script>
@@ -349,7 +343,6 @@
         if (navigator.xr === undefined) {
             new WebXRPolyfill();
         }
-
 
         const siteInfo = {
             konark: {
@@ -389,16 +382,11 @@
         // DOM elements
         const vrContainer = document.getElementById('vr-container');
         const closeVr = document.getElementById('close-vr');
-        const infoPanel = document.getElementById('info-panel');
-        const siteTitle = document.getElementById('site-title');
-        const siteDescription = document.getElementById('site-description');
         const mainSky = document.getElementById('main-sky');
-        const prevButton = document.getElementById('prev-site');
-        const nextButton = document.getElementById('next-site');
-        const languageToggle = document.getElementById('language-toggle');
-        const jagannathNavigation = document.getElementById('jagannath-navigation');
-        const imageCounter = document.getElementById('image-counter');
         const loading = document.getElementById('loading');
+        
+        // A-Frame elements
+        let vrInfoPanel, vrSiteTitle, vrSiteDescription, vrLanguageButton;
         
         let currentSite = 'konark';
         const siteOrder = ['konark', 'jagannath', 'lingaraj', 'udayagiri'];
@@ -420,23 +408,7 @@
         // Close VR experience
         closeVr.addEventListener('click', function() {
             vrContainer.style.display = 'none';
-            // Hide info panel when closing VR
-            infoPanel.classList.remove('visible');
-            isInfoPanelVisible = false;
-        });
-        
-        // Navigation buttons
-        prevButton.addEventListener('click', function() {
-            navigateToPrevSite();
-        });
-        
-        nextButton.addEventListener('click', function() {
-            navigateToNextSite();
-        });
-        
-        // Language toggle button
-        languageToggle.addEventListener('click', function() {
-            toggleLanguage();
+            hideInfoPanel();
         });
         
         // Enhanced enterVR function with loading indicator
@@ -446,12 +418,41 @@
             setTimeout(() => {
                 currentSite = site;
                 vrContainer.style.display = 'block';
-                changeLocation(site);
-                loading.style.display = 'none';
-                // Hide info panel by default when entering VR
-                infoPanel.classList.remove('visible');
-                isInfoPanelVisible = false;
+                // Wait for A-Frame to initialize
+                setTimeout(() => {
+                    initializeVRElements();
+                    changeLocation(site);
+                    hideInfoPanel();
+                    loading.style.display = 'none';
+                }, 100);
             }, 1000);
+        }
+        
+        // Initialize VR elements after A-Frame loads
+        function initializeVRElements() {
+            vrInfoPanel = document.querySelector('#vr-info-panel');
+            vrSiteTitle = document.querySelector('#vr-site-title');
+            vrSiteDescription = document.querySelector('#vr-site-description');
+            vrLanguageButton = document.querySelector('#vr-language-button');
+            
+            // Add click events to VR buttons
+            const toggleButton = document.querySelector('#vr-toggle-button');
+            const prevButton = document.querySelector('#vr-prev-button');
+            const nextButton = document.querySelector('#vr-next-button');
+            const languageButton = document.querySelector('#vr-language-button');
+            
+            if (toggleButton) {
+                toggleButton.addEventListener('click', toggleInfoPanel);
+            }
+            if (prevButton) {
+                prevButton.addEventListener('click', navigateToPrevSite);
+            }
+            if (nextButton) {
+                nextButton.addEventListener('click', navigateToNextSite);
+            }
+            if (languageButton) {
+                languageButton.addEventListener('click', toggleLanguage);
+            }
         }
         
         // Function to change location in VR
@@ -459,31 +460,22 @@
             // Update skybox
             mainSky.setAttribute('src', siteInfo[site].image);
             
-            // Show or hide Jagannath navigation based on site
-            if (site === 'jagannath' && siteInfo[site].hasNavigation) {
-                jagannathNavigation.setAttribute('visible', 'true');
-                imageCounter.setAttribute('visible', 'true');
-                currentJagannathImageIndex = 0;
-                updateJagannathImageCounter();
-            } else {
-                jagannathNavigation.setAttribute('visible', 'false');
-                imageCounter.setAttribute('visible', 'false');
-            }
-            
             // Update information panel with current language
             updateSiteInfo();
         }
         
         // Function to update site information based on current language
         function updateSiteInfo() {
+            if (!vrSiteTitle || !vrSiteDescription || !vrLanguageButton) return;
+            
             if (currentLanguage === 'english') {
-                siteTitle.textContent = siteInfo[currentSite].title;
-                siteDescription.textContent = siteInfo[currentSite].description;
-                languageToggle.textContent = 'Odia';
+                vrSiteTitle.setAttribute('text', 'value', siteInfo[currentSite].title);
+                vrSiteDescription.setAttribute('text', 'value', siteInfo[currentSite].description);
+                vrLanguageButton.querySelector('a-text').setAttribute('value', 'Odia');
             } else {
-                siteTitle.textContent = siteInfo[currentSite].titleOdia;
-                siteDescription.textContent = siteInfo[currentSite].descriptionOdia;
-                languageToggle.textContent = 'English';
+                vrSiteTitle.setAttribute('text', 'value', siteInfo[currentSite].titleOdia);
+                vrSiteDescription.setAttribute('text', 'value', siteInfo[currentSite].descriptionOdia);
+                vrLanguageButton.querySelector('a-text').setAttribute('value', 'English');
             }
         }
         
@@ -495,11 +487,21 @@
         
         // Function to toggle info panel visibility
         function toggleInfoPanel() {
+            if (!vrInfoPanel) return;
+            
             isInfoPanelVisible = !isInfoPanelVisible;
             if (isInfoPanelVisible) {
-                infoPanel.classList.add('visible');
+                vrInfoPanel.setAttribute('visible', 'true');
             } else {
-                infoPanel.classList.remove('visible');
+                vrInfoPanel.setAttribute('visible', 'false');
+            }
+        }
+        
+        // Function to hide info panel
+        function hideInfoPanel() {
+            if (vrInfoPanel) {
+                vrInfoPanel.setAttribute('visible', 'false');
+                isInfoPanelVisible = false;
             }
         }
         
@@ -518,62 +520,16 @@
             changeLocation(currentSite);
         }
         
-        // Jagannath Temple image navigation
-        function changeJagannathImage(index) {
-            if (index >= 0 && index < siteInfo.jagannath.images.length) {
-                currentJagannathImageIndex = index;
-                mainSky.setAttribute('src', siteInfo.jagannath.images[currentJagannathImageIndex]);
-                updateJagannathImageCounter();
-            }
-        }
-        
-        function updateJagannathImageCounter() {
-            imageCounter.setAttribute('text', 'value', `Image ${currentJagannathImageIndex + 1} of ${siteInfo.jagannath.images.length}`);
-        }
-        
-        // Add click events to Jagannath navigation arrows
-        document.querySelectorAll('.nav-arrow').forEach(arrow => {
-            arrow.addEventListener('click', function() {
-                if (currentSite === 'jagannath') {
-                    const direction = this.getAttribute('data-direction');
-                    if (direction === 'left') {
-                        changeJagannathImage(currentJagannathImageIndex - 1);
-                    } else if (direction === 'right') {
-                        changeJagannathImage(currentJagannathImageIndex + 1);
-                    }
-                }
-            });
-        });
-        
-        // Add click event to VR toggle button
-        document.addEventListener('DOMContentLoaded', function() {
-            const vrToggleButton = document.querySelector('#vr-toggle-button');
-            if (vrToggleButton) {
-                vrToggleButton.addEventListener('click', function() {
-                    toggleInfoPanel();
-                });
-            }
-        });
-        
         // Add keyboard navigation
         document.addEventListener('keydown', function(event) {
             if (vrContainer.style.display === 'block') {
                 if (event.key === 'ArrowLeft') {
-                    if (currentSite === 'jagannath') {
-                        changeJagannathImage(currentJagannathImageIndex - 1);
-                    } else {
-                        navigateToPrevSite();
-                    }
+                    navigateToPrevSite();
                 } else if (event.key === 'ArrowRight') {
-                    if (currentSite === 'jagannath') {
-                        changeJagannathImage(currentJagannathImageIndex + 1);
-                    } else {
-                        navigateToNextSite();
-                    }
+                    navigateToNextSite();
                 } else if (event.key === 'Escape') {
                     vrContainer.style.display = 'none';
-                    infoPanel.classList.remove('visible');
-                    isInfoPanelVisible = false;
+                    hideInfoPanel();
                 } else if (event.key === 'l' || event.key === 'L') {
                     toggleLanguage();
                 } else if (event.key === 'i' || event.key === 'I') {
@@ -583,7 +539,9 @@
         });
 
         // Initialize the first site
-        updateSiteInfo();
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initial setup will happen when VR is entered
+        });
     </script>
 </body>
 </html>
