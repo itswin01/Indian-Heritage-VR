@@ -226,111 +226,65 @@
             xr-mode-ui="enabled: true"
             renderer="colorManagement: true;"
             background="color: #000"
-            loading-screen="dotsColor: #0080e5; backgroundColor: #000"
-            cursor="rayOrigin: mouse">
+            loading-screen="dotsColor: #0080e5; backgroundColor: #000">
             
             <!-- Sky with 360 images for each location -->
             <a-sky id="main-sky" src="puri1.jpg" rotation="0 -90 0"></a-sky>
             
-            <!-- 3D Info Panel in Bottom Corner -->
-            <a-entity id="vr-info-panel" position="-1.5 -1 -1.5">
+            <!-- Simple Clickable Area - Click ANYWHERE to navigate -->
+            <a-entity id="click-area"
+                     geometry="primitive: plane; width: 100; height: 100" 
+                     material="color: #0000FF; opacity: 0.0; transparent: true"
+                     position="0 0 -5"
+                     class="clickable"
+                     data-click-action="next-site">
+            </a-entity>
+            
+            <!-- 3D Info Panel - Always Visible -->
+            <a-entity id="vr-info-panel" position="0 1.5 -2">
                 <!-- Background Panel -->
-                <a-plane position="0 0.5 0" 
-                        width="1.8" 
-                        height="1.2" 
+                <a-plane position="0 0 0" 
+                        width="2.5" 
+                        height="1.5" 
                         color="#000000" 
-                        opacity="0.85"
+                        opacity="0.9"
                         material="shader: flat">
                 </a-plane>
                 
                 <!-- Site Title -->
                 <a-entity id="vr-site-title" 
-                         position="0 0.8 -0.1" 
-                         text="align: center; color: #FFD700; width: 1.6; value: Konark Sun Temple">
+                         position="0 0.5 0.01" 
+                         text="align: center; color: #FFD700; width: 2.2; value: Konark Sun Temple">
                 </a-entity>
                 
                 <!-- Site Description -->
                 <a-entity id="vr-site-description" 
-                         position="0 0.4 -0.1" 
-                         text="align: center; color: white; width: 1.6; wrapCount: 35; 
+                         position="0 0 0.01" 
+                         text="align: center; color: white; width: 2.2; wrapCount: 40; 
                                value: Built in the 13th century, this UNESCO World Heritage site is dedicated to the Sun God.">
                 </a-entity>
                 
-                <!-- Navigation Buttons -->
-                <a-entity position="0 -0.2 -0.1">
-                    <!-- Previous Button -->
-                    <a-entity class="clickable vr-nav-button" 
-                             id="vr-prev-button"
-                             position="-0.4 -0.1 0" 
-                             geometry="primitive: box; width: 0.4; height: 0.15; depth: 0.05" 
-                             material="color: #FFD700; shader: flat"
-                             animation__hover="property: scale; to: 1.1 1.1 1.1; startEvents: mouseenter; dur: 200"
-                             animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
-                             event-set__mouseenter="material.color: #FFC400"
-                             event-set__mouseleave="material.color: #FFD700">
-                        <a-text value="← Prev" position="0 0 0.03" align="center" color="#1a2a6c" width="1.5" scale="0.8 0.8 0.8"></a-text>
-                    </a-entity>
-                    
-                    <!-- Next Button -->
-                    <a-entity class="clickable vr-nav-button" 
-                             id="vr-next-button"
-                             position="0.4 -0.1 0" 
-                             geometry="primitive: box; width: 0.4; height: 0.15; depth: 0.05" 
-                             material="color: #FFD700; shader: flat"
-                             animation__hover="property: scale; to: 1.1 1.1 1.1; startEvents: mouseenter; dur: 200"
-                             animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
-                             event-set__mouseenter="material.color: #FFC400"
-                             event-set__mouseleave="material.color: #FFD700">
-                        <a-text value="Next →" position="0 0 0.03" align="center" color="#1a2a6c" width="1.5" scale="0.8 0.8 0.8"></a-text>
-                    </a-entity>
-                    
-                    <!-- Language Toggle Button -->
-                    <a-entity class="clickable vr-nav-button" 
-                             id="vr-language-button"
-                             position="0 -0.4 0" 
-                             geometry="primitive: box; width: 0.6; height: 0.15; depth: 0.05" 
-                             material="color: #666666; shader: flat"
-                             animation__hover="property: scale; to: 1.1 1.1 1.1; startEvents: mouseenter; dur: 200"
-                             animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
-                             event-set__mouseenter="material.color: #888888"
-                             event-set__mouseleave="material.color: #666666">
-                        <a-text id="vr-language-text" value="Odia" position="0 0 0.03" align="center" color="white" width="1.5" scale="0.8 0.8 0.8"></a-text>
-                    </a-entity>
+                <!-- Instructions -->
+                <a-entity id="vr-instructions" 
+                         position="0 -0.6 0.01" 
+                         text="align: center; color: #00FF00; width: 2.2; 
+                               value: Click TRIGGER to Next Site">
                 </a-entity>
             </a-entity>
             
-            <!-- Navigation arrows for Jagannath Temple -->
-            <a-entity id="jagannath-navigation" visible="false">
-                <a-entity class="nav-arrow clickable" position="-2 0 -3" rotation="0 90 0" data-direction="left"
-                          geometry="primitive: cone; height: 0.3; radiusBottom: 0.1" 
-                          material="color: #FFD700; opacity: 0.8"
-                          animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 500"
-                          animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 500">
-                    <a-text value="←" position="0 0.4 0" align="center" color="#1a2a6c" scale="2 2 2"></a-text>
-                </a-entity>
-                
-                <a-entity class="nav-arrow clickable" position="2 0 -3" rotation="0 -90 0" data-direction="right"
-                          geometry="primitive: cone; height: 0.3; radiusBottom: 0.1" 
-                          material="color: #FFD700; opacity: 0.8"
-                          animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 500"
-                          animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 500">
-                    <a-text value="→" position="0 0.4 0" align="center" color="#1a2a6c" scale="2 2 2"></a-text>
-                </a-entity>
-            </a-entity>
-            
-            <!-- Image counter -->
-            <a-entity id="image-counter" position="0 -1.5 -2" text="align: center; color: white; width: 4" visible="false"></a-entity>
-            
-            <!-- Enhanced camera rig for Quest with proper raycaster -->
+            <!-- Camera with proper VR controls -->
             <a-entity id="rig" position="0 0 0">
-                <a-entity camera look-controls position="0 1.6 0" 
-                          wasd-controls="acceleration: 20"
-                          xr-mode-ui="enabled: true">
+                <a-entity camera 
+                         look-controls 
+                         position="0 1.6 0"
+                         wasd-controls="enabled: false"
+                         xr-mode-ui="enabled: true">
+                    
                     <!-- Laser pointer for Quest controllers -->
                     <a-entity laser-controls="hand: right" line="color: #0080e5; opacity: 0.5"></a-entity>
                     <a-entity laser-controls="hand: left" line="color: #0080e5; opacity: 0.5"></a-entity>
                     
-                    <!-- Cursor for both mouse and VR -->
+                    <!-- Simple cursor -->
                     <a-entity cursor="fuse: false; rayOrigin: mouse"
                              position="0 0 -1"
                              geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
@@ -338,7 +292,7 @@
                     </a-entity>
                     
                     <!-- Raycaster for VR controllers -->
-                    <a-entity raycaster="objects: .clickable; far: 100" line="color: #0080e5; opacity: 0.5"></a-entity>
+                    <a-entity raycaster="objects: .clickable; far: 100"></a-entity>
                 </a-entity>
             </a-entity>
         </a-scene>
@@ -427,47 +381,13 @@
         
         // Initialize VR elements after A-Frame loads
         function initializeVRElements() {
-            // Add click events to VR buttons using A-Frame events
-            const scene = document.querySelector('a-scene');
-            
-            // Previous button
-            const prevButton = document.querySelector('#vr-prev-button');
-            if (prevButton) {
-                prevButton.addEventListener('click', function() {
-                    navigateToPrevSite();
-                });
-            }
-            
-            // Next button
-            const nextButton = document.querySelector('#vr-next-button');
-            if (nextButton) {
-                nextButton.addEventListener('click', function() {
+            // Add click event to the entire clickable area
+            const clickArea = document.querySelector('#click-area');
+            if (clickArea) {
+                clickArea.addEventListener('click', function() {
                     navigateToNextSite();
                 });
             }
-            
-            // Language button
-            const languageButton = document.querySelector('#vr-language-button');
-            if (languageButton) {
-                languageButton.addEventListener('click', function() {
-                    toggleLanguage();
-                });
-            }
-            
-            // Jagannath navigation arrows
-            document.querySelectorAll('.nav-arrow').forEach(arrow => {
-                arrow.addEventListener('click', function() {
-                    if (currentSite === 'jagannath') {
-                        const direction = this.getAttribute('data-direction');
-                        if (direction === 'left') {
-                            // Add your image navigation logic here
-                            console.log('Left arrow clicked');
-                        } else if (direction === 'right') {
-                            console.log('Right arrow clicked');
-                        }
-                    }
-                });
-            });
         }
         
         // Function to change location in VR
@@ -483,18 +403,15 @@
         function updateSiteInfo() {
             const vrSiteTitle = document.querySelector('#vr-site-title');
             const vrSiteDescription = document.querySelector('#vr-site-description');
-            const vrLanguageText = document.querySelector('#vr-language-text');
             
-            if (!vrSiteTitle || !vrSiteDescription || !vrLanguageText) return;
+            if (!vrSiteTitle || !vrSiteDescription) return;
             
             if (currentLanguage === 'english') {
                 vrSiteTitle.setAttribute('text', 'value', siteInfo[currentSite].title);
                 vrSiteDescription.setAttribute('text', 'value', siteInfo[currentSite].description);
-                vrLanguageText.setAttribute('value', 'Odia');
             } else {
                 vrSiteTitle.setAttribute('text', 'value', siteInfo[currentSite].titleOdia);
                 vrSiteDescription.setAttribute('text', 'value', siteInfo[currentSite].descriptionOdia);
-                vrLanguageText.setAttribute('value', 'English');
             }
         }
         
@@ -504,14 +421,7 @@
             updateSiteInfo();
         }
         
-        // Navigation functions
-        function navigateToPrevSite() {
-            const currentIndex = siteOrder.indexOf(currentSite);
-            const prevIndex = (currentIndex - 1 + siteOrder.length) % siteOrder.length;
-            currentSite = siteOrder[prevIndex];
-            changeLocation(currentSite);
-        }
-        
+        // Navigation function - Click ANYWHERE goes to next site
         function navigateToNextSite() {
             const currentIndex = siteOrder.indexOf(currentSite);
             const nextIndex = (currentIndex + 1) % siteOrder.length;
@@ -519,12 +429,10 @@
             changeLocation(currentSite);
         }
         
-        // Add keyboard navigation
+        // Add keyboard navigation (spacebar to next site)
         document.addEventListener('keydown', function(event) {
             if (vrContainer.style.display === 'block') {
-                if (event.key === 'ArrowLeft') {
-                    navigateToPrevSite();
-                } else if (event.key === 'ArrowRight') {
+                if (event.key === ' ' || event.key === 'Spacebar') {
                     navigateToNextSite();
                 } else if (event.key === 'Escape') {
                     vrContainer.style.display = 'none';
