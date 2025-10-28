@@ -147,6 +147,11 @@
             border-radius: 10px;
             z-index: 101;
             text-align: center;
+            display: none; /* Hidden by default in VR */
+        }
+        
+        .info-panel.visible {
+            display: block; /* Show when toggled */
         }
         
         .info-panel h2 {
@@ -285,6 +290,17 @@
             <!-- Sky with 360 images for each location -->
             <a-sky id="main-sky" src="puri1.jpg" rotation="0 -90 0"></a-sky>
             
+            <!-- VR Toggle Button -->
+            <a-entity id="vr-toggle-button" 
+                      position="0 -0.5 -1.5" 
+                      geometry="primitive: circle; radius: 0.2" 
+                      material="color: #FFD700; shader: flat"
+                      class="clickable"
+                      animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 500"
+                      animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 500">
+                <a-text value="Info" position="0 0 0.01" align="center" color="#1a2a6c" width="2"></a-text>
+            </a-entity>
+            
             <!-- Navigation arrows for Jagannath Temple -->
             <a-entity id="jagannath-navigation" visible="false">
                 <a-entity class="nav-arrow" position="-2 0 -3" rotation="0 90 0" data-direction="left"
@@ -385,8 +401,9 @@
         const loading = document.getElementById('loading');
         
         let currentSite = 'konark';
-        const siteOrder = ['konark', 'jagannath', 'lingaraj', 'dhauli', 'udayagiri'];
+        const siteOrder = ['konark', 'jagannath', 'lingaraj', 'udayagiri'];
         let currentLanguage = 'english'; // 'english' or 'odia'
+        let isInfoPanelVisible = false;
         
         // Jagannath Temple navigation variables
         let currentJagannathImageIndex = 0;
@@ -403,6 +420,9 @@
         // Close VR experience
         closeVr.addEventListener('click', function() {
             vrContainer.style.display = 'none';
+            // Hide info panel when closing VR
+            infoPanel.classList.remove('visible');
+            isInfoPanelVisible = false;
         });
         
         // Navigation buttons
@@ -428,6 +448,9 @@
                 vrContainer.style.display = 'block';
                 changeLocation(site);
                 loading.style.display = 'none';
+                // Hide info panel by default when entering VR
+                infoPanel.classList.remove('visible');
+                isInfoPanelVisible = false;
             }, 1000);
         }
         
@@ -468,6 +491,16 @@
         function toggleLanguage() {
             currentLanguage = currentLanguage === 'english' ? 'odia' : 'english';
             updateSiteInfo();
+        }
+        
+        // Function to toggle info panel visibility
+        function toggleInfoPanel() {
+            isInfoPanelVisible = !isInfoPanelVisible;
+            if (isInfoPanelVisible) {
+                infoPanel.classList.add('visible');
+            } else {
+                infoPanel.classList.remove('visible');
+            }
         }
         
         // Navigation functions
@@ -512,6 +545,16 @@
             });
         });
         
+        // Add click event to VR toggle button
+        document.addEventListener('DOMContentLoaded', function() {
+            const vrToggleButton = document.querySelector('#vr-toggle-button');
+            if (vrToggleButton) {
+                vrToggleButton.addEventListener('click', function() {
+                    toggleInfoPanel();
+                });
+            }
+        });
+        
         // Add keyboard navigation
         document.addEventListener('keydown', function(event) {
             if (vrContainer.style.display === 'block') {
@@ -529,8 +572,12 @@
                     }
                 } else if (event.key === 'Escape') {
                     vrContainer.style.display = 'none';
+                    infoPanel.classList.remove('visible');
+                    isInfoPanelVisible = false;
                 } else if (event.key === 'l' || event.key === 'L') {
                     toggleLanguage();
+                } else if (event.key === 'i' || event.key === 'I') {
+                    toggleInfoPanel();
                 }
             }
         });
