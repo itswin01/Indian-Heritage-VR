@@ -240,7 +240,7 @@
             <a-sky id="main-sky" src="puri1.jpg" rotation="0 -90 0"></a-sky>
             
             <!-- Simple instruction text -->
-            <a-text value="PULL TRIGGER TO NEXT SITE + AUDIO" 
+            <a-text value="PRESS GRIP BUTTON TO NEXT SITE + AUDIO" 
                    position="0 1.5 -2" 
                    align="center" 
                    color="#00FF00" 
@@ -349,40 +349,11 @@
             
             // Wait for scene to be fully loaded
             scene.addEventListener('loaded', function() {
-                console.log('A-Frame scene loaded, setting up trigger events');
+                console.log('A-Frame scene loaded, setting up GRIP button events');
                 
-                // METHOD 1: Direct controller event listening
-                const rightController = document.querySelector('[laser-controls][hand="right"]');
-                const leftController = document.querySelector('[laser-controls][hand="left"]');
-                
-                if (rightController) {
-                    rightController.addEventListener('triggerdown', function() {
-                        console.log('RIGHT TRIGGER PRESSED - Next Site');
-                        navigateToNextSite();
-                    });
-                }
-                
-                if (leftController) {
-                    leftController.addEventListener('triggerdown', function() {
-                        console.log('LEFT TRIGGER PRESSED - Next Site');
-                        navigateToNextSite();
-                    });
-                }
-                
-                // METHOD 2: Scene-level controller events
-                scene.addEventListener('controllerconnected', function(event) {
-                    console.log('Controller connected:', event.detail.name);
-                    const controller = event.detail;
-                    
-                    controller.addEventListener('triggerdown', function() {
-                        console.log('CONTROLLER TRIGGER PRESSED - Next Site');
-                        navigateToNextSite();
-                    });
-                });
-                
-                // METHOD 3: Generic trigger events
-                scene.addEventListener('triggerdown', function(event) {
-                    console.log('GENERIC TRIGGER PRESSED - Next Site');
+                // Listen for GRIP button events (the long white button below trigger)
+                scene.addEventListener('gripdown', function(event) {
+                    console.log('GRIP BUTTON PRESSED - Next Site');
                     if (canClick) {
                         navigateToNextSite();
                         canClick = false;
@@ -392,7 +363,7 @@
                     }
                 });
                 
-                // METHOD 4: Mouse click for testing
+                // Also listen for mouse clicks (for desktop testing)
                 scene.addEventListener('click', function(event) {
                     console.log('MOUSE CLICKED - Next Site');
                     if (canClick) {
@@ -404,7 +375,7 @@
                     }
                 });
                 
-                console.log('All trigger event listeners set up');
+                console.log('GRIP button event listeners set up');
             });
         }
         
@@ -455,7 +426,7 @@
             }
         }
         
-        // Navigation function - ANY trigger pull goes to next site + plays audio
+        // Navigation function - ANY GRIP button press goes to next site + plays audio
         function navigateToNextSite() {
             console.log('Navigating to next site');
             const currentIndex = siteOrder.indexOf(currentSite);
