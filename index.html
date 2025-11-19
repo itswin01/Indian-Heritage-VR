@@ -220,7 +220,7 @@
     <div class="vr-container" id="vr-container">
         <button class="close-vr" id="close-vr">✕</button>
         
-        <!-- A-Frame VR Scene - Only 360 view remains -->
+        <!-- A-Frame VR Scene with Audio -->
         <a-scene 
             vr-mode-ui="enabled: true" 
             xr-mode-ui="enabled: true"
@@ -228,8 +228,19 @@
             background="color: #000"
             loading-screen="dotsColor: #0080e5; backgroundColor: #000">
             
+            <!-- Audio Assets -->
+            <a-assets>
+                <audio id="konark-audio" src="https://raw.githubusercontent.com/itswin01/Indian-Heritage-VR/main/konark.mp3" preload="auto"></audio>
+                <audio id="puri-audio" src="https://raw.githubusercontent.com/itswin01/Indian-Heritage-VR/main/puri.mp3" preload="auto"></audio>
+                <audio id="lingaraj-audio" src="https://raw.githubusercontent.com/itswin01/Indian-Heritage-VR/main/lingaraj.mp3" preload="auto"></audio>
+                <audio id="cave-audio" src="https://raw.githubusercontent.com/itswin01/Indian-Heritage-VR/main/cave.mp3" preload="auto"></audio>
+            </a-assets>
+            
             <!-- Sky with 360 images for each location -->
             <a-sky id="main-sky" src="puri1.jpg" rotation="0 -90 0"></a-sky>
+            
+            <!-- Audio Entity -->
+            <a-entity id="narration-audio" sound="autoplay: false"></a-entity>
             
             <!-- Camera with VR controls -->
             <a-entity id="rig" position="0 0 0">
@@ -239,7 +250,7 @@
                          wasd-controls="enabled: false"
                          xr-mode-ui="enabled: true">
                     
-                    <!-- Laser pointer for Quest controllers - ADDED BACK FOR TRIGGER -->
+                    <!-- Laser pointer for Quest controllers -->
                     <a-entity laser-controls="hand: right" line="color: #0080e5; opacity: 0.5"></a-entity>
                     <a-entity laser-controls="hand: left" line="color: #0080e5; opacity: 0.5"></a-entity>
                     
@@ -256,16 +267,20 @@
 
         const siteInfo = {
             konark: {
-                image: "konark.jpg"
+                image: "konark.jpg",
+                audio: "#konark-audio"
             },
             jagannath: {
-                image: "puri3.jpg"
+                image: "puri3.jpg",
+                audio: "#puri-audio"
             },
             lingaraj: {
-                image: "lingaraj.jpg"
+                image: "lingaraj.jpg",
+                audio: "#lingaraj-audio"
             },
             udayagiri: {
-                image: "cave1.jpg"
+                image: "cave1.jpg",
+                audio: "#cave-audio"
             }
         };
         
@@ -371,6 +386,22 @@
             if (mainSky && siteInfo[site]) {
                 mainSky.setAttribute('src', siteInfo[site].image);
                 console.log('Skybox updated with:', siteInfo[site].image);
+                
+                // Play audio for the site
+                playSiteAudio(site);
+            }
+        }
+        
+        // Function to play audio for current site
+        function playSiteAudio(site) {
+            const audioEntity = document.querySelector('#narration-audio');
+            if (audioEntity && siteInfo[site]) {
+                // Stop any currently playing audio
+                audioEntity.components.sound.stopSound();
+                
+                // Set new audio source and play
+                audioEntity.setAttribute('sound', `src: ${siteInfo[site].audio}; autoplay: true; volume: 1.0`);
+                console.log('Playing audio for:', site);
             }
         }
         
