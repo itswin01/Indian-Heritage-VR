@@ -240,10 +240,17 @@
             <a-sky id="main-sky" src="puri1.jpg" rotation="0 -90 0"></a-sky>
             
             <!-- Simple instruction text -->
-            <a-text value="PRESS GRIP BUTTON TO NEXT SITE + AUDIO" 
+            <a-text id="instruction-text" value="PRESS GRIP BUTTON TO NEXT SITE + AUDIO" 
                    position="0 1.5 -2" 
                    align="center" 
                    color="#00FF00" 
+                   width="4"></a-text>
+            
+            <!-- Site indicator -->
+            <a-text id="site-indicator" value="Konark Sun Temple" 
+                   position="0 2 -2" 
+                   align="center" 
+                   color="#FFD700" 
                    width="4"></a-text>
             
             <!-- Camera with VR controls -->
@@ -266,6 +273,10 @@
                     </a-entity>
                 </a-entity>
             </a-entity>
+            
+            <!-- Controller entities for grip button detection -->
+            <a-entity id="left-hand" hand-controls="hand: left"></a-entity>
+            <a-entity id="right-hand" hand-controls="hand: right"></a-entity>
         </a-scene>
     </div>
     
@@ -278,19 +289,23 @@
         const siteInfo = {
             konark: {
                 image: "konark.jpg",
-                audio: "konark-audio"
+                audio: "konark-audio",
+                name: "Konark Sun Temple"
             },
             jagannath: {
                 image: "puri3.jpg",
-                audio: "puri-audio"
+                audio: "puri-audio",
+                name: "Jagannath Temple"
             },
             lingaraj: {
                 image: "lingaraj.jpg",
-                audio: "lingaraj-audio"
+                audio: "lingaraj-audio",
+                name: "Lingaraj Temple"
             },
             udayagiri: {
                 image: "cave1.jpg",
-                audio: "cave-audio"
+                audio: "cave-audio",
+                name: "Udayagiri Caves"
             }
         };
         
@@ -298,6 +313,8 @@
         const vrContainer = document.getElementById('vr-container');
         const closeVr = document.getElementById('close-vr');
         const mainSky = document.getElementById('main-sky');
+        const instructionText = document.getElementById('instruction-text');
+        const siteIndicator = document.getElementById('site-indicator');
         const loading = document.getElementById('loading');
         
         let currentSite = 'konark';
@@ -349,34 +366,46 @@
             
             // Wait for scene to be fully loaded
             scene.addEventListener('loaded', function() {
-                console.log('A-Frame scene loaded, setting up GRIP button events');
+                console.log('A-Frame scene loaded, setting up controller events');
                 
-                // Listen for GRIP button events (the long white button below trigger)
-                scene.addEventListener('gripdown', function(event) {
-                    console.log('GRIP BUTTON PRESSED - Next Site');
-                    if (canClick) {
-                        navigateToNextSite();
-                        canClick = false;
-                        setTimeout(() => {
-                            canClick = true;
-                        }, 1000);
-                    }
-                });
+                // Get hand controllers
+                const leftHand = document.getElementById('left-hand');
+                const rightHand = document.getElementById('right-hand');
+                
+                // Listen for gripdown events on both controllers
+                if (leftHand) {
+                    leftHand.addEventListener('gripdown', function(event) {
+                        console.log('LEFT GRIP BUTTON PRESSED - Next Site');
+                        handleGripButtonPress();
+                    });
+                }
+                
+                if (rightHand) {
+                    rightHand.addEventListener('gripdown', function(event) {
+                        console.log('RIGHT GRIP BUTTON PRESSED - Next Site');
+                        handleGripButtonPress();
+                    });
+                }
                 
                 // Also listen for mouse clicks (for desktop testing)
                 scene.addEventListener('click', function(event) {
                     console.log('MOUSE CLICKED - Next Site');
-                    if (canClick) {
-                        navigateToNextSite();
-                        canClick = false;
-                        setTimeout(() => {
-                            canClick = true;
-                        }, 1000);
-                    }
+                    handleGripButtonPress();
                 });
                 
-                console.log('GRIP button event listeners set up');
+                console.log('Grip button event listeners set up');
             });
+        }
+        
+        // Handle grip button press
+        function handleGripButtonPress() {
+            if (canClick) {
+                navigateToNextSite();
+                canClick = false;
+                setTimeout(() => {
+                    canClick = true;
+                }, 1000);
+            }
         }
         
         // Function to stop current audio
@@ -421,6 +450,11 @@
                 mainSky.setAttribute('src', siteInfo[site].image);
                 console.log('Skybox updated with:', siteInfo[site].image);
                 
+                // Update site indicator
+                if (siteIndicator) {
+                    siteIndicator.setAttribute('value', siteInfo[site].name);
+                }
+                
                 // Play audio for the new site
                 playSiteAudio(site);
             }
@@ -441,7 +475,7 @@
             if (vrContainer.style.display === 'block') {
                 if (event.key === ' ' || event.key === 'Spacebar') {
                     console.log('Spacebar pressed - navigating to next site');
-                    navigateToNextSite();
+                    handleGripButtonPress();
                 } else if (event.key === 'Escape') {
                     console.log('Escape pressed - closing VR');
                     vrContainer.style.display = 'none';
