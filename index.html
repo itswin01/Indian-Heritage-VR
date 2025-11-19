@@ -220,7 +220,7 @@
     <div class="vr-container" id="vr-container">
         <button class="close-vr" id="close-vr">✕</button>
         
-        <!-- A-Frame VR Scene with Audio -->
+        <!-- A-Frame VR Scene - SIMPLIFIED for Trigger Testing -->
         <a-scene 
             vr-mode-ui="enabled: true" 
             xr-mode-ui="enabled: true"
@@ -228,25 +228,15 @@
             background="color: #000"
             loading-screen="dotsColor: #0080e5; backgroundColor: #000">
             
-            <!-- Audio Assets -->
-            <a-assets>
-                <audio id="konark-audio" src="https://raw.githubusercontent.com/itswin01/Indian-Heritage-VR/main/konark.mp3" preload="auto"></audio>
-                <audio id="puri-audio" src="https://raw.githubusercontent.com/itswin01/Indian-Heritage-VR/main/puri.mp3" preload="auto"></audio>
-                <audio id="lingaraj-audio" src="https://raw.githubusercontent.com/itswin01/Indian-Heritage-VR/main/lingaraj.mp3" preload="auto"></audio>
-                <audio id="cave-audio" src="https://raw.githubusercontent.com/itswin01/Indian-Heritage-VR/main/cave.mp3" preload="auto"></audio>
-            </a-assets>
-            
             <!-- Sky with 360 images for each location -->
             <a-sky id="main-sky" src="puri1.jpg" rotation="0 -90 0"></a-sky>
             
-            <!-- Audio Play Button (Visible in VR) -->
-            <a-entity id="audio-button" position="0 1.5 -2">
-                <a-box position="0 0 0" width="0.3" height="0.3" depth="0.1" color="#FFD700" 
-                      animation__mouseenter="property: scale; to: 1.2 1.2 1.2; dur: 200; startEvents: mouseenter"
-                      animation__mouseleave="property: scale; to: 1 1 1; dur: 200; startEvents: mouseleave">
-                </a-box>
-                <a-text value="🔊 PLAY" position="0 0.4 0.06" align="center" color="white" width="2"></a-text>
-            </a-entity>
+            <!-- Simple instruction text -->
+            <a-text value="PULL TRIGGER TO NEXT SITE" 
+                   position="0 1.5 -2" 
+                   align="center" 
+                   color="#00FF00" 
+                   width="4"></a-text>
             
             <!-- Camera with VR controls -->
             <a-entity id="rig" position="0 0 0">
@@ -257,15 +247,14 @@
                          xr-mode-ui="enabled: true">
                     
                     <!-- Laser pointer for Quest controllers -->
-                    <a-entity laser-controls="hand: right" line="color: #0080e5; opacity: 0.5" raycaster="objects: .clickable"></a-entity>
-                    <a-entity laser-controls="hand: left" line="color: #0080e5; opacity: 0.5" raycaster="objects: .clickable"></a-entity>
+                    <a-entity laser-controls="hand: right" line="color: #0080e5; opacity: 0.5"></a-entity>
+                    <a-entity laser-controls="hand: left" line="color: #0080e5; opacity: 0.5"></a-entity>
                     
-                    <!-- Cursor for interactions -->
+                    <!-- Simple cursor -->
                     <a-entity cursor="fuse: false; rayOrigin: mouse"
                              position="0 0 -1"
                              geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
-                             material="color: #0080e5; shader: flat"
-                             raycaster="objects: .clickable">
+                             material="color: #0080e5; shader: flat">
                     </a-entity>
                 </a-entity>
             </a-entity>
@@ -280,20 +269,16 @@
 
         const siteInfo = {
             konark: {
-                image: "konark.jpg",
-                audio: "#konark-audio"
+                image: "konark.jpg"
             },
             jagannath: {
-                image: "puri3.jpg",
-                audio: "#puri-audio"
+                image: "puri3.jpg"
             },
             lingaraj: {
-                image: "lingaraj.jpg",
-                audio: "#lingaraj-audio"
+                image: "lingaraj.jpg"
             },
             udayagiri: {
-                image: "cave1.jpg",
-                audio: "#cave-audio"
+                image: "cave1.jpg"
             }
         };
         
@@ -306,7 +291,6 @@
         let currentSite = 'konark';
         const siteOrder = ['konark', 'jagannath', 'lingaraj', 'udayagiri'];
         let canClick = true;
-        let currentAudio = null;
         
         // Add event listeners to all VR buttons
         document.querySelectorAll('.vr-button').forEach(button => {
@@ -320,11 +304,6 @@
         // Close VR experience
         closeVr.addEventListener('click', function() {
             vrContainer.style.display = 'none';
-            // Stop any playing audio when closing VR
-            if (currentAudio) {
-                currentAudio.pause();
-                currentAudio.currentTime = 0;
-            }
         });
         
         // Enhanced enterVR function
@@ -357,32 +336,39 @@
             scene.addEventListener('loaded', function() {
                 console.log('A-Frame scene loaded, setting up trigger events');
                 
-                // Set up audio button interaction
-                const audioButton = document.querySelector('#audio-button');
-                if (audioButton) {
-                    audioButton.classList.add('clickable');
-                    audioButton.addEventListener('click', function() {
-                        playSiteAudio(currentSite);
+                // METHOD 1: Direct controller event listening
+                const rightController = document.querySelector('[laser-controls][hand="right"]');
+                const leftController = document.querySelector('[laser-controls][hand="left"]');
+                
+                if (rightController) {
+                    rightController.addEventListener('triggerdown', function() {
+                        console.log('RIGHT TRIGGER PRESSED - Next Site');
+                        navigateToNextSite();
                     });
                 }
                 
-                // Listen for controller trigger events
-                scene.addEventListener('triggerdown', function(event) {
-                    console.log('Trigger pressed - navigating to next site');
-                    if (canClick) {
+                if (leftController) {
+                    leftController.addEventListener('triggerdown', function() {
+                        console.log('LEFT TRIGGER PRESSED - Next Site');
                         navigateToNextSite();
-                        // Prevent rapid clicking
-                        canClick = false;
-                        setTimeout(() => {
-                            canClick = true;
-                        }, 1000); // 1 second cooldown
-                    }
+                    });
+                }
+                
+                // METHOD 2: Scene-level controller events
+                scene.addEventListener('controllerconnected', function(event) {
+                    console.log('Controller connected:', event.detail.name);
+                    const controller = event.detail;
+                    
+                    controller.addEventListener('triggerdown', function() {
+                        console.log('CONTROLLER TRIGGER PRESSED - Next Site');
+                        navigateToNextSite();
+                    });
                 });
                 
-                // Also listen for mouse clicks (for desktop testing)
-                scene.addEventListener('click', function(event) {
-                    console.log('Mouse clicked - navigating to next site');
-                    if (canClick && event.detail && event.detail.intersection && event.detail.intersection.object.el.id !== 'audio-button') {
+                // METHOD 3: Generic trigger events
+                scene.addEventListener('triggerdown', function(event) {
+                    console.log('GENERIC TRIGGER PRESSED - Next Site');
+                    if (canClick) {
                         navigateToNextSite();
                         canClick = false;
                         setTimeout(() => {
@@ -390,6 +376,20 @@
                         }, 1000);
                     }
                 });
+                
+                // METHOD 4: Mouse click for testing
+                scene.addEventListener('click', function(event) {
+                    console.log('MOUSE CLICKED - Next Site');
+                    if (canClick) {
+                        navigateToNextSite();
+                        canClick = false;
+                        setTimeout(() => {
+                            canClick = true;
+                        }, 1000);
+                    }
+                });
+                
+                console.log('All trigger event listeners set up');
             });
         }
         
@@ -403,30 +403,6 @@
             }
         }
         
-        // Function to play audio for current site
-        function playSiteAudio(site) {
-            // Stop any currently playing audio
-            if (currentAudio) {
-                currentAudio.pause();
-                currentAudio.currentTime = 0;
-            }
-            
-            // Get audio element
-            const audioId = siteInfo[site].audio.replace('#', '');
-            const audioElement = document.getElementById(audioId);
-            
-            if (audioElement) {
-                currentAudio = audioElement;
-                audioElement.play().then(() => {
-                    console.log('Playing audio for:', site);
-                }).catch(error => {
-                    console.log('Audio play failed:', error);
-                    // Show message to user to interact first
-                    alert('Please click the VR view first, then click the audio button to play narration.');
-                });
-            }
-        }
-        
         // Navigation function - ANY trigger pull goes to next site
         function navigateToNextSite() {
             console.log('Navigating to next site');
@@ -435,12 +411,6 @@
             currentSite = siteOrder[nextIndex];
             console.log('New current site:', currentSite);
             changeLocation(currentSite);
-            
-            // Stop audio when changing sites
-            if (currentAudio) {
-                currentAudio.pause();
-                currentAudio.currentTime = 0;
-            }
         }
         
         // Add keyboard navigation (spacebar to next site)
@@ -452,9 +422,6 @@
                 } else if (event.key === 'Escape') {
                     console.log('Escape pressed - closing VR');
                     vrContainer.style.display = 'none';
-                } else if (event.key === 'a' || event.key === 'A') {
-                    console.log('A key pressed - playing audio');
-                    playSiteAudio(currentSite);
                 }
             }
         });
