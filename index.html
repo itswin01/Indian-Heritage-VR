@@ -239,8 +239,14 @@
             <!-- Sky with 360 images for each location -->
             <a-sky id="main-sky" src="puri1.jpg" rotation="0 -90 0"></a-sky>
             
-            <!-- Audio Entity -->
-            <a-entity id="narration-audio" sound="autoplay: false"></a-entity>
+            <!-- Audio Play Button (Visible in VR) -->
+            <a-entity id="audio-button" position="0 1.5 -2">
+                <a-box position="0 0 0" width="0.3" height="0.3" depth="0.1" color="#FFD700" 
+                      animation__mouseenter="property: scale; to: 1.2 1.2 1.2; dur: 200; startEvents: mouseenter"
+                      animation__mouseleave="property: scale; to: 1 1 1; dur: 200; startEvents: mouseleave">
+                </a-box>
+                <a-text value="🔊 PLAY" position="0 0.4 0.06" align="center" color="white" width="2"></a-text>
+            </a-entity>
             
             <!-- Camera with VR controls -->
             <a-entity id="rig" position="0 0 0">
@@ -251,9 +257,16 @@
                          xr-mode-ui="enabled: true">
                     
                     <!-- Laser pointer for Quest controllers -->
-                    <a-entity laser-controls="hand: right" line="color: #0080e5; opacity: 0.5"></a-entity>
-                    <a-entity laser-controls="hand: left" line="color: #0080e5; opacity: 0.5"></a-entity>
+                    <a-entity laser-controls="hand: right" line="color: #0080e5; opacity: 0.5" raycaster="objects: .clickable"></a-entity>
+                    <a-entity laser-controls="hand: left" line="color: #0080e5; opacity: 0.5" raycaster="objects: .clickable"></a-entity>
                     
+                    <!-- Cursor for interactions -->
+                    <a-entity cursor="fuse: false; rayOrigin: mouse"
+                             position="0 0 -1"
+                             geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+                             material="color: #0080e5; shader: flat"
+                             raycaster="objects: .clickable">
+                    </a-entity>
                 </a-entity>
             </a-entity>
         </a-scene>
@@ -293,6 +306,7 @@
         let currentSite = 'konark';
         const siteOrder = ['konark', 'jagannath', 'lingaraj', 'udayagiri'];
         let canClick = true;
+        let currentAudio = null;
         
         // Add event listeners to all VR buttons
         document.querySelectorAll('.vr-button').forEach(button => {
@@ -306,6 +320,11 @@
         // Close VR experience
         closeVr.addEventListener('click', function() {
             vrContainer.style.display = 'none';
+            // Stop any playing audio when closing VR
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
         });
         
         // Enhanced enterVR function
@@ -338,6 +357,15 @@
             scene.addEventListener('loaded', function() {
                 console.log('A-Frame scene loaded, setting up trigger events');
                 
+                // Set up audio button interaction
+                const audioButton = document.querySelector('#audio-button');
+                if (audioButton) {
+                    audioButton.classList.add('clickable');
+                    audioButton.addEventListener('click', function() {
+                        playSiteAudio(currentSite);
+                    });
+                }
+                
                 // Listen for controller trigger events
                 scene.addEventListener('triggerdown', function(event) {
                     console.log('Trigger pressed - navigating to next site');
@@ -354,26 +382,12 @@
                 // Also listen for mouse clicks (for desktop testing)
                 scene.addEventListener('click', function(event) {
                     console.log('Mouse clicked - navigating to next site');
-                    if (canClick) {
+                    if (canClick && event.detail && event.detail.intersection && event.detail.intersection.object.el.id !== 'audio-button') {
                         navigateToNextSite();
                         canClick = false;
                         setTimeout(() => {
                             canClick = true;
                         }, 1000);
-                    }
-                });
-                
-                // Add gamepad event listeners as fallback
-                scene.addEventListener('gamepadbuttondown', function(event) {
-                    if (event.detail.id === 'trigger') {
-                        console.log('Gamepad trigger pressed');
-                        if (canClick) {
-                            navigateToNextSite();
-                            canClick = false;
-                            setTimeout(() => {
-                                canClick = true;
-                            }, 1000);
-                        }
                     }
                 });
             });
@@ -386,22 +400,30 @@
             if (mainSky && siteInfo[site]) {
                 mainSky.setAttribute('src', siteInfo[site].image);
                 console.log('Skybox updated with:', siteInfo[site].image);
-                
-                // Play audio for the site
-                playSiteAudio(site);
             }
         }
         
         // Function to play audio for current site
         function playSiteAudio(site) {
-            const audioEntity = document.querySelector('#narration-audio');
-            if (audioEntity && siteInfo[site]) {
-                // Stop any currently playing audio
-                audioEntity.components.sound.stopSound();
-                
-                // Set new audio source and play
-                audioEntity.setAttribute('sound', `src: ${siteInfo[site].audio}; autoplay: true; volume: 1.0`);
-                console.log('Playing audio for:', site);
+            // Stop any currently playing audio
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+            
+            // Get audio element
+            const audioId = siteInfo[site].audio.replace('#', '');
+            const audioElement = document.getElementById(audioId);
+            
+            if (audioElement) {
+                currentAudio = audioElement;
+                audioElement.play().then(() => {
+                    console.log('Playing audio for:', site);
+                }).catch(error => {
+                    console.log('Audio play failed:', error);
+                    // Show message to user to interact first
+                    alert('Please click the VR view first, then click the audio button to play narration.');
+                });
             }
         }
         
@@ -413,6 +435,12 @@
             currentSite = siteOrder[nextIndex];
             console.log('New current site:', currentSite);
             changeLocation(currentSite);
+            
+            // Stop audio when changing sites
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
         }
         
         // Add keyboard navigation (spacebar to next site)
@@ -424,6 +452,9 @@
                 } else if (event.key === 'Escape') {
                     console.log('Escape pressed - closing VR');
                     vrContainer.style.display = 'none';
+                } else if (event.key === 'a' || event.key === 'A') {
+                    console.log('A key pressed - playing audio');
+                    playSiteAudio(currentSite);
                 }
             }
         });
@@ -431,7 +462,6 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM loaded - VR experience ready');
-            // Initial setup will happen when VR is entered
         });
     </script>
 </body>
