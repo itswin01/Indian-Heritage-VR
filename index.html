@@ -240,7 +240,7 @@
             <a-sky id="main-sky" src="puri1.jpg" rotation="0 -90 0"></a-sky>
             
             <!-- Simple instruction text -->
-            <a-text id="instruction-text" value="PRESS GRIP BUTTON TO NEXT SITE + AUDIO" 
+            <a-text id="instruction-text" value="PRESS 'A' BUTTON TO NEXT SITE + AUDIO" 
                    position="0 1.5 -2" 
                    align="center" 
                    color="#00FF00" 
@@ -274,9 +274,8 @@
                 </a-entity>
             </a-entity>
             
-            <!-- Controller entities for grip button detection -->
-            <a-entity id="left-hand" hand-controls="hand: left"></a-entity>
-            <a-entity id="right-hand" hand-controls="hand: right"></a-entity>
+            <!-- Controller entities for A button detection -->
+            <a-entity id="right-hand" hand-controls="hand: right" oculus-touch-controls="hand: right"></a-entity>
         </a-scene>
     </div>
     
@@ -366,39 +365,39 @@
             
             // Wait for scene to be fully loaded
             scene.addEventListener('loaded', function() {
-                console.log('A-Frame scene loaded, setting up controller events');
+                console.log('A-Frame scene loaded, setting up A button events');
                 
-                // Get hand controllers
-                const leftHand = document.getElementById('left-hand');
+                // Get right hand controller (A button is on right controller)
                 const rightHand = document.getElementById('right-hand');
                 
-                // Listen for gripdown events on both controllers
-                if (leftHand) {
-                    leftHand.addEventListener('gripdown', function(event) {
-                        console.log('LEFT GRIP BUTTON PRESSED - Next Site');
-                        handleGripButtonPress();
-                    });
-                }
-                
                 if (rightHand) {
-                    rightHand.addEventListener('gripdown', function(event) {
-                        console.log('RIGHT GRIP BUTTON PRESSED - Next Site');
-                        handleGripButtonPress();
+                    // Listen for abuttondown event (A button press)
+                    rightHand.addEventListener('abuttondown', function(event) {
+                        console.log('A BUTTON PRESSED - Next Site');
+                        handleAButtonPress();
                     });
+                    
+                    // Also listen for xbuttondown (X button on left controller as alternative)
+                    rightHand.addEventListener('bbuttondown', function(event) {
+                        console.log('B BUTTON PRESSED - Next Site');
+                        handleAButtonPress();
+                    });
+                    
+                    console.log('A button event listeners set up');
+                } else {
+                    console.error('Right hand controller not found');
                 }
                 
                 // Also listen for mouse clicks (for desktop testing)
                 scene.addEventListener('click', function(event) {
                     console.log('MOUSE CLICKED - Next Site');
-                    handleGripButtonPress();
+                    handleAButtonPress();
                 });
-                
-                console.log('Grip button event listeners set up');
             });
         }
         
-        // Handle grip button press
-        function handleGripButtonPress() {
+        // Handle A button press
+        function handleAButtonPress() {
             if (canClick) {
                 navigateToNextSite();
                 canClick = false;
@@ -460,7 +459,7 @@
             }
         }
         
-        // Navigation function - ANY GRIP button press goes to next site + plays audio
+        // Navigation function - A button press goes to next site + plays audio
         function navigateToNextSite() {
             console.log('Navigating to next site');
             const currentIndex = siteOrder.indexOf(currentSite);
@@ -475,7 +474,7 @@
             if (vrContainer.style.display === 'block') {
                 if (event.key === ' ' || event.key === 'Spacebar') {
                     console.log('Spacebar pressed - navigating to next site');
-                    handleGripButtonPress();
+                    handleAButtonPress();
                 } else if (event.key === 'Escape') {
                     console.log('Escape pressed - closing VR');
                     vrContainer.style.display = 'none';
