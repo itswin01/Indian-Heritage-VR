@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Indian Cultural Heritage VR Experience</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js"></script>
     <style>
         * {
             margin: 0;
@@ -130,11 +131,6 @@
             height: 50px;
             font-size: 1.5rem;
             cursor: pointer;
-            border: 2px solid white;
-        }
-
-        .close-vr:hover {
-            background: rgba(255, 0, 0, 0.7);
         }
 
         .loading {
@@ -146,119 +142,6 @@
             color: white;
             font-size: 1.5rem;
             z-index: 102;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            border-radius: 10px;
-        }
-        
-        /* Navigation and Info Panel - Fixed Position Overlay */
-        .vr-overlay {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 101;
-            width: 90%;
-            max-width: 800px;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(10px);
-            border: 2px solid #FFD700;
-            border-radius: 20px;
-            padding: 20px;
-            color: white;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .site-info {
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        .site-name {
-            font-size: 1.8rem;
-            color: #FFD700;
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-
-        .site-description {
-            font-size: 1rem;
-            line-height: 1.6;
-            max-height: 120px;
-            overflow-y: auto;
-            padding: 0 10px;
-            color: #fff;
-            scrollbar-width: thin;
-            scrollbar-color: #FFD700 #333;
-        }
-
-        .site-description::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .site-description::-webkit-scrollbar-track {
-            background: #333;
-            border-radius: 4px;
-        }
-
-        .site-description::-webkit-scrollbar-thumb {
-            background: #FFD700;
-            border-radius: 4px;
-        }
-
-        .nav-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid rgba(255, 215, 0, 0.3);
-        }
-
-        .nav-button {
-            background: #FFD700;
-            color: #1a2a6c;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 30px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            min-width: 120px;
-        }
-
-        .nav-button:hover {
-            background: white;
-            transform: scale(1.05);
-        }
-
-        .nav-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .site-counter {
-            color: #FFD700;
-            font-size: 1.1rem;
-            font-weight: bold;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 8px 20px;
-            border-radius: 30px;
-        }
-
-        .instruction-hint {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 101;
-            background: rgba(0, 0, 0, 0.6);
-            color: #00FF00;
-            padding: 8px 16px;
-            border-radius: 30px;
-            font-size: 0.9rem;
-            border: 1px solid #00FF00;
         }
         
         footer {
@@ -277,25 +160,11 @@
             h1 {
                 font-size: 2.2rem;
             }
-            
-            .vr-overlay {
-                width: 95%;
-                padding: 15px;
-            }
-            
-            .site-name {
-                font-size: 1.4rem;
-            }
-            
-            .nav-button {
-                padding: 8px 15px;
-                min-width: 80px;
-            }
         }
     </style>
 </head>
 <body>
-    <div class="loading" id="loading">Loading VR Experience...</div>
+    <div class="loading" id="loading"></div>
     
     <div class="container">
         <header>
@@ -304,7 +173,6 @@
         </header>
         
         <div class="heritage-grid">
-            <!-- Konark Sun Temple -->
             <div class="heritage-card" data-location="konark">
                 <div class="card-image" style="background-image: url('https://assets.cntraveller.in/photos/65a4ca16f4f38543f111ce6d/16:9/w_5760,h_3240,c_limit/1444924249s')"></div>
                 <div class="card-content">
@@ -314,59 +182,37 @@
                 </div>
             </div>
             
-            <!-- Jagannath Temple -->
             <div class="heritage-card" data-location="jagannath">
                 <div class="card-image" style="background-image: url('https://d1msew97rp2nin.cloudfront.net/prod/phool/blogimages/172017492135594.webp')"></div>
                 <div class="card-content">
                     <h3>Jagannath Temple</h3>
-                    <p>An important Hindu temple dedicated to Jagannath, a form of Vishnu, located in Puri, Odisha. Famous for the annual Rath Yatra festival.</p>
+                    <p>An important Hindu temple dedicated to Jagannath, a form of Vishnu, located in Puri, Odisha.</p>
                     <button class="vr-button">Experience in VR</button>
                 </div>
             </div>
             
-            <!-- Lingaraj Temple -->
             <div class="heritage-card" data-location="lingaraj">
                 <div class="card-image" style="background-image: url('https://www.easeindiatrip.com/blog/wp-content/uploads/2025/03/Odisha-Bhubaneswar-Lingaraj-Temple-03.jpg')"></div>
                 <div class="card-content">
                     <h3>Lingaraj Temple</h3>
-                    <p>One of the oldest temples in Bhubaneswar, dedicated to Harihara, a form of Shiva and Vishnu. Built in the 11th century.</p>
+                    <p>One of the oldest temples in Bhubaneswar, dedicated to Harihara, a form of Shiva and Vishnu.</p>
                     <button class="vr-button">Experience in VR</button>
                 </div>
             </div>
 
-            <!-- Udayagiri Caves -->
+            
             <div class="heritage-card" data-location="udayagiri">
                 <div class="card-image" style="background-image: url('https://i0.wp.com/compass.rauias.com/wp-content/uploads/2024/07/image-24.png')"></div>
                 <div class="card-content">
                     <h3>Udayagiri Caves</h3>
-                    <p>Rock-cut caves with historical and archaeological significance, featuring ancient inscriptions and sculptures from the 2nd century BCE.</p>
-                    <button class="vr-button">Experience in VR</button>
-                </div>
-            </div>
-
-            <!-- Golden Temple of Vellore (Placeholder) -->
-            <div class="heritage-card" data-location="vellore">
-                <div class="card-image" style="background-image: url('https://via.placeholder.com/800x600/FFD700/000000?text=Golden+Temple+of+Vellore')"></div>
-                <div class="card-content">
-                    <h3>Golden Temple of Vellore</h3>
-                    <p>Sri Lakshmi Narayani Golden Temple, also known as the Golden Temple of Vellore, is a magnificent temple covered in gold leaf, located in Tamil Nadu.</p>
-                    <button class="vr-button">Experience in VR</button>
-                </div>
-            </div>
-
-            <!-- Department View (Placeholder) -->
-            <div class="heritage-card" data-location="department">
-                <div class="card-image" style="background-image: url('https://via.placeholder.com/800x600/4CAF50/000000?text=My+Department')"></div>
-                <div class="card-content">
-                    <h3>My Department</h3>
-                    <p>A virtual tour of my academic department, showcasing classrooms, laboratories, and common areas where students learn and collaborate.</p>
+                    <p>Rock-cut caves with historical and archaeological significance, featuring inscriptions and sculptures.</p>
                     <button class="vr-button">Experience in VR</button>
                 </div>
             </div>
         </div>
         
         <footer>
-            <p>This VR experience is compatible with laptops, desktop computers, and VR headsets</p>
+            <p>This VR experience is compatible with Meta Quest 3 and other VR headsets</p>
             <p>Experience India's cultural heritage through immersive virtual reality</p>
         </footer>
     </div>
@@ -374,85 +220,102 @@
     <div class="vr-container" id="vr-container">
         <button class="close-vr" id="close-vr">✕</button>
         
-        <!-- Instruction Hint -->
-        <div class="instruction-hint" id="instruction-hint">
-            ␣ Spacebar to navigate | Click and drag to look around
-        </div>
-        
-        <!-- Fixed Overlay with Site Info and Navigation -->
-        <div class="vr-overlay" id="vr-overlay">
-            <div class="site-info">
-                <div class="site-name" id="overlay-site-name">Konark Sun Temple</div>
-                <div class="site-description" id="overlay-site-description">
-                    The Konark Sun Temple is a 13th-century CE Sun temple at Konark in Odisha, India. It is believed to have been built by King Narasimhadeva I of the Eastern Ganga Dynasty. The temple is in the shape of a gigantic chariot with elaborately carved stone wheels, pillars, and walls. A masterpiece of Kalingan architecture, it is a UNESCO World Heritage Site.
-                </div>
-            </div>
-            
-            <div class="nav-controls">
-                <button class="nav-button" id="prev-site">◀ Previous</button>
-                <span class="site-counter" id="site-counter">1 / 6</span>
-                <button class="nav-button" id="next-site">Next ▶</button>
-            </div>
-        </div>
-        
-        <!-- A-Frame VR Scene (No Audio) -->
+        <!-- A-Frame VR Scene -->
         <a-scene 
             vr-mode-ui="enabled: true" 
+            xr-mode-ui="enabled: true"
             renderer="colorManagement: true;"
             background="color: #000"
             loading-screen="dotsColor: #0080e5; backgroundColor: #000">
             
             <!-- Sky with 360 images for each location -->
-            <a-sky id="main-sky" src="" rotation="0 -90 0"></a-sky>
+            <a-sky id="main-sky" src="puri1.jpg" rotation="0 -90 0"></a-sky>
             
-            <!-- Camera with look controls (optimized for laptop) -->
-            <a-entity id="rig" position="0 0 0">
-                <a-entity camera 
-                         look-controls
-                         mouse-cursor
-                         position="0 1.6 0"
-                         wasd-controls="enabled: true">
+            <!-- Single English Info Panel - Always Visible -->
+            <a-entity id="vr-info-panel" position="0 1 -2">
+                <!-- Background Panel -->
+                <a-plane position="0 0 0" 
+                        width="2.5" 
+                        height="1.5" 
+                        color="#000000" 
+                        opacity="0.9"
+                        material="shader: flat">
+                </a-plane>
+                
+                <!-- Site Title (English) -->
+                <a-entity id="vr-site-title" 
+                         position="0 0.5 0.01" 
+                         text="align: center; color: #FFD700; width: 2.2; value: Konark Sun Temple">
+                </a-entity>
+                
+                <!-- Site Description (English) -->
+                <a-entity id="vr-site-description" 
+                         position="0 0 0.01" 
+                         text="align: center; color: white; width: 2.2; wrapCount: 40; 
+                               value: Built in the 13th century, this UNESCO World Heritage site is dedicated to the Sun God.">
+                </a-entity>
+                
+                <!-- Instructions -->
+                <a-entity id="vr-instructions" 
+                         position="0 -0.6 0.01" 
+                         text="align: center; color: #00FF00; width: 2.2; 
+                               value: Pull TRIGGER to Next Site">
                 </a-entity>
             </a-entity>
-            
-            <!-- Add some ambient light -->
-            <a-light type="ambient" color="#445566"></a-light>
-            <a-light type="point" intensity="0.5" position="0 3 0"></a-light>
+
+            <!-- Camera with VR controls -->
+            <a-entity id="rig" position="0 0 0">
+                <a-entity camera 
+                         look-controls 
+                         position="0 1.6 0"
+                         wasd-controls="enabled: false"
+                         xr-mode-ui="enabled: true">
+                    
+                    <!-- Laser pointer for Quest controllers -->
+                    <a-entity laser-controls="hand: right" line="color: #0080e5; opacity: 0.5"></a-entity>
+                    <a-entity laser-controls="hand: left" line="color: #0080e5; opacity: 0.5"></a-entity>
+                    
+                    <!-- Simple cursor -->
+                    <a-entity cursor="fuse: false; rayOrigin: mouse"
+                             position="0 0 -1"
+                             geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+                             material="color: #0080e5; shader: flat">
+                    </a-entity>
+                </a-entity>
+            </a-entity>
         </a-scene>
     </div>
     
     <script>
-        // Site information with detailed descriptions
+        // Initialize WebXR Polyfill
+        if (navigator.xr === undefined) {
+            new WebXRPolyfill();
+        }
+
         const siteInfo = {
             konark: {
-                image: "https://raw.githubusercontent.com/aframevr/sample-assets/master/assets/images/konark.jpg", // Placeholder - replace with actual 360 image
-                name: "Konark Sun Temple",
-                description: "The Konark Sun Temple is a 13th-century CE Sun temple at Konark in Odisha, India. It is believed to have been built by King Narasimhadeva I of the Eastern Ganga Dynasty. The temple is in the shape of a gigantic chariot with elaborately carved stone wheels, pillars, and walls. A masterpiece of Kalingan architecture, it is a UNESCO World Heritage Site."
+                title: "Konark Sun Temple",
+                description: "Built in the 13th century, this UNESCO World Heritage site is dedicated to the Sun God. The temple is designed as a gigantic chariot with elaborately carved stone wheels, pillars and walls.",
+                image: "konark.jpg",
+                hasNavigation: false
             },
             jagannath: {
-                image: "https://raw.githubusercontent.com/aframevr/sample-assets/master/assets/images/jagannath.jpg", // Placeholder - replace with actual 360 image
-                name: "Jagannath Temple",
-                description: "The Jagannath Temple in Puri is a famous Hindu temple dedicated to Jagannath, a form of Vishnu. It is part of the Char Dham pilgrimages. The temple was built in the 12th century by King Anantavarman Chodaganga Deva of the Eastern Ganga Dynasty. The temple is famous for its annual Rath Yatra festival where the deities are taken out on massive chariots. Millions of devotees visit this sacred site every year."
+                title: "Jagannath Temple, Puri",
+                description: "One of the Char Dham pilgrimage sites, this temple is famous for its annual Rath Yatra festival. The temple was built in the 12th century and is dedicated to Lord Jagannath, a form of Vishnu.",
+                image: "puri3.jpg",
+                hasNavigation: true,
             },
             lingaraj: {
-                image: "https://raw.githubusercontent.com/aframevr/sample-assets/master/assets/images/lingaraj.jpg", // Placeholder - replace with actual 360 image
-                name: "Lingaraj Temple",
-                description: "Lingaraj Temple is one of the oldest and largest temples in Bhubaneswar, Odisha. Dedicated to Harihara, a form of Shiva and Vishnu, it was built in the 11th century. The temple tower rises to a height of about 180 feet and is elaborately carved. The temple complex contains over 150 smaller shrines and is considered the finest example of Kalingan architecture. The temple is a living monument and an active place of worship."
+                title: "Lingaraj Temple, Bhubaneswar",
+                description: "Dedicated to Lord Shiva, this 11th-century temple is a masterpiece of Kalinga architecture. The temple tower stands at 180 feet and is surrounded by numerous smaller shrines.",
+                image: "lingaraj.jpg",
+                hasNavigation: false
             },
             udayagiri: {
-                image: "https://raw.githubusercontent.com/aframevr/sample-assets/master/assets/images/udayagiri.jpg", // Placeholder - replace with actual 360 image
-                name: "Udayagiri Caves",
-                description: "The Udayagiri Caves are rock-cut caves with historical and archaeological significance, located near Bhubaneswar. Dating back to the 2nd century BCE, these caves feature ancient inscriptions and sculptures. They were primarily used as Jain monastic retreats. The caves showcase the development of rock-cut architecture in ancient India and contain important artifacts from the Kalinga period."
-            },
-            vellore: {
-                image: "https://raw.githubusercontent.com/aframevr/sample-assets/master/assets/images/background.jpg", // Placeholder - replace with actual 360 image
-                name: "Golden Temple of Vellore",
-                description: "Sri Lakshmi Narayani Golden Temple, also known as the Golden Temple of Vellore, is a magnificent temple covered in gold leaf, located in Tamil Nadu. The temple was built by the Vellore-based Sri Narayani Peedam and features intricate gold work on its walls and pillars. The inner sanctum is covered with approximately 1500 kg of gold leaf, making it a unique and breathtaking sight. The temple complex also features a meditation hall and a museum."
-            },
-            department: {
-                image: "https://raw.githubusercontent.com/aframevr/sample-assets/master/assets/images/background.jpg", // Placeholder - replace with actual 360 image
-                name: "My Department",
-                description: "A virtual tour of my academic department. This 360° view showcases the learning environment where students attend classes, conduct research, and collaborate on projects. The department features modern classrooms, well-equipped laboratories, a computer center, and comfortable common areas for students to study and interact. It's a place where knowledge is shared and futures are built. The department fosters innovation and academic excellence."
+                title: "Udayagiri and Khandagiri Caves",
+                description: "These rock-cut caves date back to the 2nd century BCE and were used as residential blocks for Jain monks. The caves feature intricate carvings and inscriptions detailing historical events.",
+                image: "cave1.jpg",
+                hasNavigation: false
             }
         };
         
@@ -460,15 +323,10 @@
         const vrContainer = document.getElementById('vr-container');
         const closeVr = document.getElementById('close-vr');
         const mainSky = document.getElementById('main-sky');
-        const overlaySiteName = document.getElementById('overlay-site-name');
-        const overlaySiteDescription = document.getElementById('overlay-site-description');
         const loading = document.getElementById('loading');
-        const prevButton = document.getElementById('prev-site');
-        const nextButton = document.getElementById('next-site');
-        const siteCounter = document.getElementById('site-counter');
         
         let currentSite = 'konark';
-        const siteOrder = ['konark', 'jagannath', 'lingaraj', 'udayagiri', 'vellore', 'department'];
+        const siteOrder = ['konark', 'jagannath', 'lingaraj', 'udayagiri'];
         let canClick = true;
         
         // Add event listeners to all VR buttons
@@ -485,17 +343,7 @@
             vrContainer.style.display = 'none';
         });
         
-        // Previous site button
-        prevButton.addEventListener('click', function() {
-            navigateToPrevSite();
-        });
-        
-        // Next site button
-        nextButton.addEventListener('click', function() {
-            navigateToNextSite();
-        });
-        
-        // Enter VR function
+        // Enhanced enterVR function
         function enterVR(site) {
             loading.style.display = 'block';
             
@@ -504,98 +352,85 @@
                 vrContainer.style.display = 'block';
                 // Wait for A-Frame to initialize
                 setTimeout(() => {
+                    initializeVRElements();
                     changeLocation(site);
-                    updateUI();
                     loading.style.display = 'none';
-                }, 500);
-            }, 500);
+                }, 100);
+            }, 1000);
+        }
+        
+        // Initialize VR elements after A-Frame loads
+        function initializeVRElements() {
+            const scene = document.querySelector('a-scene');
+            
+            // Listen for controller trigger events
+            scene.addEventListener('triggerdown', function(event) {
+                if (canClick) {
+                    navigateToNextSite();
+                    // Prevent rapid clicking
+                    canClick = false;
+                    setTimeout(() => {
+                        canClick = true;
+                    }, 1000); // 1 second cooldown
+                }
+            });
+            
+            // Also listen for mouse clicks (for desktop testing)
+            scene.addEventListener('click', function(event) {
+                if (canClick) {
+                    navigateToNextSite();
+                    canClick = false;
+                    setTimeout(() => {
+                        canClick = true;
+                    }, 1000);
+                }
+            });
         }
         
         // Function to change location in VR
         function changeLocation(site) {
-            console.log('Changing to site:', site);
-            
             // Update skybox
-            if (mainSky && siteInfo[site]) {
-                mainSky.setAttribute('src', siteInfo[site].image);
-                console.log('Skybox updated for:', siteInfo[site].name);
+            mainSky.setAttribute('src', siteInfo[site].image);
+            
+            // Update information panel
+            updateSiteInfo();
+        }
+        
+        // Function to update site information
+        function updateSiteInfo() {
+            const vrSiteTitle = document.querySelector('#vr-site-title');
+            const vrSiteDescription = document.querySelector('#vr-site-description');
+            
+            if (vrSiteTitle && vrSiteDescription) {
+                vrSiteTitle.setAttribute('text', 'value', siteInfo[currentSite].title);
+                vrSiteDescription.setAttribute('text', 'value', siteInfo[currentSite].description);
             }
         }
         
-        // Update the fixed overlay UI with site information
-        function updateUI() {
-            if (siteInfo[currentSite]) {
-                // Update site name in overlay
-                if (overlaySiteName) {
-                    overlaySiteName.textContent = siteInfo[currentSite].name;
-                }
-                
-                // Update site description in overlay
-                if (overlaySiteDescription) {
-                    overlaySiteDescription.textContent = siteInfo[currentSite].description;
-                }
-                
-                // Update counter
-                updateCounter();
-            }
-        }
-        
-        // Navigate to previous site
-        function navigateToPrevSite() {
-            if (canClick) {
-                const currentIndex = siteOrder.indexOf(currentSite);
-                const prevIndex = (currentIndex - 1 + siteOrder.length) % siteOrder.length;
-                currentSite = siteOrder[prevIndex];
-                changeLocation(currentSite);
-                updateUI();
-                
-                // Debounce clicks
-                canClick = false;
-                setTimeout(() => {
-                    canClick = true;
-                }, 500);
-            }
-        }
-        
-        // Navigate to next site
+        // Navigation function - ANY trigger pull goes to next site
         function navigateToNextSite() {
-            if (canClick) {
-                const currentIndex = siteOrder.indexOf(currentSite);
-                const nextIndex = (currentIndex + 1) % siteOrder.length;
-                currentSite = siteOrder[nextIndex];
-                changeLocation(currentSite);
-                updateUI();
-                
-                // Debounce clicks
-                canClick = false;
+            const currentIndex = siteOrder.indexOf(currentSite);
+            const nextIndex = (currentIndex + 1) % siteOrder.length;
+            currentSite = siteOrder[nextIndex];
+            changeLocation(currentSite);
+            
+            // Add visual feedback
+            const instructions = document.querySelector('#vr-instructions');
+            if (instructions) {
+                const originalColor = instructions.getAttribute('text').color;
+                instructions.setAttribute('text', 'color', '#FF0000');
                 setTimeout(() => {
-                    canClick = true;
-                }, 500);
+                    instructions.setAttribute('text', 'color', '#00FF00');
+                }, 200);
             }
         }
         
-        // Update site counter display
-        function updateCounter() {
-            const currentIndex = siteOrder.indexOf(currentSite);
-            siteCounter.textContent = `${currentIndex + 1} / ${siteOrder.length}`;
-        }
-        
-        // Add keyboard navigation for laptop users
+        // Add keyboard navigation (spacebar to next site)
         document.addEventListener('keydown', function(event) {
             if (vrContainer.style.display === 'block') {
-                if (event.key === 'ArrowLeft') {
-                    console.log('Left arrow pressed - previous site');
-                    navigateToPrevSite();
-                } else if (event.key === 'ArrowRight') {
-                    console.log('Right arrow pressed - next site');
-                    navigateToNextSite();
-                } else if (event.key === ' ' || event.key === 'Spacebar' || event.code === 'Space') {
-                    // Spacebar to go to next site
-                    event.preventDefault(); // Prevent page scrolling
-                    console.log('Spacebar pressed - next site');
+                if (event.key === ' ' || event.key === 'Spacebar') {
                     navigateToNextSite();
                 } else if (event.key === 'Escape') {
-                    console.log('Escape pressed - closing VR');
                     vrContainer.style.display = 'none';
                 }
             }
@@ -603,8 +438,7 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded - VR experience ready');
-            console.log('Available sites:', siteOrder.length);
+            // Initial setup will happen when VR is entered
         });
     </script>
 </body>
