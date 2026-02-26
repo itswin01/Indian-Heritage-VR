@@ -223,20 +223,19 @@
                 </div>
             </div>
             
-            <div class="heritage-card" data-location="dhauli">
-                <div class="card-image" style="background-image: url('https://bhubaneswartourism.in/images/places-to-visit/headers/dhauli-giri-hills-bhubaneswar-tourism-entry-fee-timings-holidays-reviews-header.jpg')"></div>
+            <div class="heritage-card" data-location="sripuram">
+                <div class="card-image" style="background-image: url('https://www.tamilnadutourism.tn.gov.in/img/pages/large-desktop/sripuram-golden-temple-1656165002_60297c4c987a1f8be833.webp')"></div>
                 <div class="card-content">
-                    <h3>Dhauli Shanti Stupa</h3>
-                    <p>Buddhist shrine built on the site where the Kalinga War took place, promoting peace and non-violence.</p>
+                    <h3>Sripuram Golden Temple, Vellore</h3>
+                    <p>A magnificent golden temple nestled in the hills of Vellore, Tamil Nadu. The entire structure is covered in pure gold leaf, featuring intricate Vedic architecture and spiritual significance.</p>
                     <button class="vr-button">Experience in VR</button>
                 </div>
             </div>
             
-            <div class="heritage-card" data-location="udayagiri">
-                <div class="card-image" style="background-image: url('https://i0.wp.com/compass.rauias.com/wp-content/uploads/2024/07/image-24.png')"></div>
+            <div class="heritage-card" data-location="it-dept">
+                <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80')"></div>
                 <div class="card-content">
-                    <h3>Udayagiri Caves</h3>
-                    <p>Rock-cut caves with historical and archaeological significance, featuring inscriptions and sculptures.</p>
+                    <h3>IT Department Tour</h3>
                     <button class="vr-button">Experience in VR</button>
                 </div>
             </div>
@@ -324,16 +323,16 @@
                 image: "lingaraj.jpg",
                 hasNavigation: false
             },
-            dhauli: {
-                title: "Dhauli Shanti Stupa",
-                description: "Built on the site where the Kalinga War took place, this peace pagoda was constructed in 1972 through Japanese-Buddhist collaboration. It symbolizes peace and non-violence.",
-                image: "https://cdn.glitch.global/1b42ff2f-5d4d-4c24-8c2d-7e3f2c7d5b95/dhauli.jpg?v=1647359206000",
+            "golden-temple": {
+                title: "Sri Lakshmi Narayani Golden Temple, Vellore",
+                description: "A spiritual park spread over 100 acres, featuring a stunning golden temple covered in 1.5 kg of pure gold leaf. The temple's star-shaped path represents a journey of spiritual transformation, with Vedic inscriptions and divine architecture.",
+                image: "golden.jpg",
                 hasNavigation: false
             },
-            udayagiri: {
-                title: "Udayagiri and Khandagiri Caves",
-                description: "These rock-cut caves date back to the 2nd century BCE and were used as residential blocks for Jain monks. The caves feature intricate carvings and inscriptions detailing historical events.",
-                image: "cave1.jpg",
+            "it-dept": {
+                title: "IT Department Tour",
+                description: "Step into the heart of India's technological advancement. Explore modern office spaces, server rooms, and innovation labs that drive the country's digital transformation.",
+                image: "it.jpg",
                 hasNavigation: false
             }
         };
@@ -349,7 +348,7 @@
         const imageCounter = document.getElementById('image-counter');
         
         let currentSite = 'konark';
-        const siteOrder = ['konark', 'jagannath', 'lingaraj', 'dhauli', 'udayagiri'];
+        const siteOrder = ['konark', 'jagannath', 'lingaraj', 'golden-temple', 'it-dept'];
         
         // Jagannath Temple navigation variables
         let currentJagannathImageIndex = 0;
