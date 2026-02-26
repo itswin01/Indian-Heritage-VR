@@ -151,32 +151,81 @@
             border-radius: 10px;
         }
         
-        /* Laptop-specific navigation */
-        .vr-controls {
+        /* Navigation and Info Panel - Fixed Position Overlay */
+        .vr-overlay {
             position: fixed;
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 101;
-            display: flex;
-            gap: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 15px 25px;
-            border-radius: 50px;
+            width: 90%;
+            max-width: 800px;
+            background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(10px);
             border: 2px solid #FFD700;
+            border-radius: 20px;
+            padding: 20px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .site-info {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .site-name {
+            font-size: 1.8rem;
+            color: #FFD700;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .site-description {
+            font-size: 1rem;
+            line-height: 1.6;
+            max-height: 120px;
+            overflow-y: auto;
+            padding: 0 10px;
+            color: #fff;
+            scrollbar-width: thin;
+            scrollbar-color: #FFD700 #333;
+        }
+
+        .site-description::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .site-description::-webkit-scrollbar-track {
+            background: #333;
+            border-radius: 4px;
+        }
+
+        .site-description::-webkit-scrollbar-thumb {
+            background: #FFD700;
+            border-radius: 4px;
+        }
+
+        .nav-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 215, 0, 0.3);
         }
 
         .nav-button {
             background: #FFD700;
             color: #1a2a6c;
             border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
+            padding: 12px 25px;
+            border-radius: 30px;
             font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
+            min-width: 120px;
         }
 
         .nav-button:hover {
@@ -190,11 +239,26 @@
         }
 
         .site-counter {
-            color: white;
-            font-size: 1rem;
-            padding: 10px 20px;
-            border-left: 2px solid #FFD700;
-            border-right: 2px solid #FFD700;
+            color: #FFD700;
+            font-size: 1.1rem;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 20px;
+            border-radius: 30px;
+        }
+
+        .instruction-hint {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 101;
+            background: rgba(0, 0, 0, 0.6);
+            color: #00FF00;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            border: 1px solid #00FF00;
         }
         
         footer {
@@ -212,6 +276,20 @@
             
             h1 {
                 font-size: 2.2rem;
+            }
+            
+            .vr-overlay {
+                width: 95%;
+                padding: 15px;
+            }
+            
+            .site-name {
+                font-size: 1.4rem;
+            }
+            
+            .nav-button {
+                padding: 8px 15px;
+                min-width: 80px;
             }
         }
     </style>
@@ -296,11 +374,25 @@
     <div class="vr-container" id="vr-container">
         <button class="close-vr" id="close-vr">✕</button>
         
-        <!-- Laptop Navigation Controls -->
-        <div class="vr-controls" id="vr-controls">
-            <button class="nav-button" id="prev-site">◀ Previous</button>
-            <span class="site-counter" id="site-counter">1 / 6</span>
-            <button class="nav-button" id="next-site">Next ▶</button>
+        <!-- Instruction Hint -->
+        <div class="instruction-hint" id="instruction-hint">
+            ␣ Spacebar to navigate | Click and drag to look around
+        </div>
+        
+        <!-- Fixed Overlay with Site Info and Navigation -->
+        <div class="vr-overlay" id="vr-overlay">
+            <div class="site-info">
+                <div class="site-name" id="overlay-site-name">Konark Sun Temple</div>
+                <div class="site-description" id="overlay-site-description">
+                    The Konark Sun Temple is a 13th-century CE Sun temple at Konark in Odisha, India. It is believed to have been built by King Narasimhadeva I of the Eastern Ganga Dynasty. The temple is in the shape of a gigantic chariot with elaborately carved stone wheels, pillars, and walls. A masterpiece of Kalingan architecture, it is a UNESCO World Heritage Site.
+                </div>
+            </div>
+            
+            <div class="nav-controls">
+                <button class="nav-button" id="prev-site">◀ Previous</button>
+                <span class="site-counter" id="site-counter">1 / 6</span>
+                <button class="nav-button" id="next-site">Next ▶</button>
+            </div>
         </div>
         
         <!-- A-Frame VR Scene (No Audio) -->
@@ -312,42 +404,6 @@
             
             <!-- Sky with 360 images for each location -->
             <a-sky id="main-sky" src="" rotation="0 -90 0"></a-sky>
-            
-            <!-- Site Information Text Box -->
-            <a-entity position="0 0.5 -3" rotation="0 0 0" id="info-panel">
-                <!-- Background panel -->
-                <a-plane width="3.5" height="2.2" color="#000000" opacity="0.8" position="0 0 0" material="transparent: true; side: double;"></a-plane>
-                <a-plane width="3.6" height="2.3" color="#FFD700" opacity="0.3" position="0 0 0.01" material="transparent: true; side: double;"></a-plane>
-                
-                <!-- Site name -->
-                <a-text id="site-name" value="Konark Sun Temple" 
-                       position="0 0.8 0.1" 
-                       align="center" 
-                       color="#FFD700" 
-                       width="3.2"
-                       font="kelsonsans"
-                       font-size="0.15"></a-text>
-                
-                <!-- Site description - multi-line text -->
-                <a-text id="site-description" 
-                       value="The Konark Sun Temple is a 13th-century CE Sun temple at Konark in Odisha, India. It is believed to have been built by King Narasimhadeva I of the Eastern Ganga Dynasty. The temple is in the shape of a gigantic chariot with elaborately carved stone wheels, pillars, and walls." 
-                       position="0 0.1 0.1" 
-                       align="center" 
-                       color="#FFFFFF" 
-                       width="3.2"
-                       font="kelsonsans"
-                       font-size="0.07"
-                       line-height="50"></a-text>
-            </a-entity>
-            
-            <!-- Simple instruction text -->
-            <a-text id="instruction-text" 
-                   value="Use arrow buttons below to navigate | Click and drag to look around" 
-                   position="0 -1 -2.5" 
-                   align="center" 
-                   color="#00FF00" 
-                   width="5"
-                   font-size="0.1"></a-text>
             
             <!-- Camera with look controls (optimized for laptop) -->
             <a-entity id="rig" position="0 0 0">
@@ -376,27 +432,27 @@
             jagannath: {
                 image: "https://raw.githubusercontent.com/aframevr/sample-assets/master/assets/images/jagannath.jpg", // Placeholder - replace with actual 360 image
                 name: "Jagannath Temple",
-                description: "The Jagannath Temple in Puri is a famous Hindu temple dedicated to Jagannath, a form of Vishnu. It is part of the Char Dham pilgrimages. The temple was built in the 12th century by King Anantavarman Chodaganga Deva of the Eastern Ganga Dynasty. The temple is famous for its annual Rath Yatra festival where the deities are taken out on massive chariots."
+                description: "The Jagannath Temple in Puri is a famous Hindu temple dedicated to Jagannath, a form of Vishnu. It is part of the Char Dham pilgrimages. The temple was built in the 12th century by King Anantavarman Chodaganga Deva of the Eastern Ganga Dynasty. The temple is famous for its annual Rath Yatra festival where the deities are taken out on massive chariots. Millions of devotees visit this sacred site every year."
             },
             lingaraj: {
                 image: "https://raw.githubusercontent.com/aframevr/sample-assets/master/assets/images/lingaraj.jpg", // Placeholder - replace with actual 360 image
                 name: "Lingaraj Temple",
-                description: "Lingaraj Temple is one of the oldest and largest temples in Bhubaneswar, Odisha. Dedicated to Harihara, a form of Shiva and Vishnu, it was built in the 11th century. The temple tower rises to a height of about 180 feet and is elaborately carved. The temple complex contains over 150 smaller shrines and is considered the finest example of Kalingan architecture."
+                description: "Lingaraj Temple is one of the oldest and largest temples in Bhubaneswar, Odisha. Dedicated to Harihara, a form of Shiva and Vishnu, it was built in the 11th century. The temple tower rises to a height of about 180 feet and is elaborately carved. The temple complex contains over 150 smaller shrines and is considered the finest example of Kalingan architecture. The temple is a living monument and an active place of worship."
             },
             udayagiri: {
                 image: "https://raw.githubusercontent.com/aframevr/sample-assets/master/assets/images/udayagiri.jpg", // Placeholder - replace with actual 360 image
                 name: "Udayagiri Caves",
-                description: "The Udayagiri Caves are rock-cut caves with historical and archaeological significance, located near Bhubaneswar. Dating back to the 2nd century BCE, these caves feature ancient inscriptions and sculptures. They were primarily used as Jain monastic retreats. The caves showcase the development of rock-cut architecture in ancient India."
+                description: "The Udayagiri Caves are rock-cut caves with historical and archaeological significance, located near Bhubaneswar. Dating back to the 2nd century BCE, these caves feature ancient inscriptions and sculptures. They were primarily used as Jain monastic retreats. The caves showcase the development of rock-cut architecture in ancient India and contain important artifacts from the Kalinga period."
             },
             vellore: {
                 image: "https://raw.githubusercontent.com/aframevr/sample-assets/master/assets/images/background.jpg", // Placeholder - replace with actual 360 image
                 name: "Golden Temple of Vellore",
-                description: "Sri Lakshmi Narayani Golden Temple, also known as the Golden Temple of Vellore, is a magnificent temple covered in gold leaf, located in Tamil Nadu. The temple was built by the Vellore-based Sri Narayani Peedam and features intricate gold work on its walls and pillars. The inner sanctum is covered with approximately 1500 kg of gold leaf, making it a unique and breathtaking sight."
+                description: "Sri Lakshmi Narayani Golden Temple, also known as the Golden Temple of Vellore, is a magnificent temple covered in gold leaf, located in Tamil Nadu. The temple was built by the Vellore-based Sri Narayani Peedam and features intricate gold work on its walls and pillars. The inner sanctum is covered with approximately 1500 kg of gold leaf, making it a unique and breathtaking sight. The temple complex also features a meditation hall and a museum."
             },
             department: {
                 image: "https://raw.githubusercontent.com/aframevr/sample-assets/master/assets/images/background.jpg", // Placeholder - replace with actual 360 image
                 name: "My Department",
-                description: "A virtual tour of my academic department. This 360° view showcases the learning environment where students attend classes, conduct research, and collaborate on projects. The department features modern classrooms, well-equipped laboratories, a computer center, and comfortable common areas for students to study and interact. It's a place where knowledge is shared and futures are built."
+                description: "A virtual tour of my academic department. This 360° view showcases the learning environment where students attend classes, conduct research, and collaborate on projects. The department features modern classrooms, well-equipped laboratories, a computer center, and comfortable common areas for students to study and interact. It's a place where knowledge is shared and futures are built. The department fosters innovation and academic excellence."
             }
         };
         
@@ -404,9 +460,8 @@
         const vrContainer = document.getElementById('vr-container');
         const closeVr = document.getElementById('close-vr');
         const mainSky = document.getElementById('main-sky');
-        const siteName = document.getElementById('site-name');
-        const siteDescription = document.getElementById('site-description');
-        const instructionText = document.getElementById('instruction-text');
+        const overlaySiteName = document.getElementById('overlay-site-name');
+        const overlaySiteDescription = document.getElementById('overlay-site-description');
         const loading = document.getElementById('loading');
         const prevButton = document.getElementById('prev-site');
         const nextButton = document.getElementById('next-site');
@@ -450,7 +505,7 @@
                 // Wait for A-Frame to initialize
                 setTimeout(() => {
                     changeLocation(site);
-                    updateCounter();
+                    updateUI();
                     loading.style.display = 'none';
                 }, 500);
             }, 500);
@@ -463,23 +518,25 @@
             // Update skybox
             if (mainSky && siteInfo[site]) {
                 mainSky.setAttribute('src', siteInfo[site].image);
-                
-                // Update site name text
-                if (siteName) {
-                    siteName.setAttribute('value', siteInfo[site].name);
+                console.log('Skybox updated for:', siteInfo[site].name);
+            }
+        }
+        
+        // Update the fixed overlay UI with site information
+        function updateUI() {
+            if (siteInfo[currentSite]) {
+                // Update site name in overlay
+                if (overlaySiteName) {
+                    overlaySiteName.textContent = siteInfo[currentSite].name;
                 }
                 
-                // Update site description text
-                if (siteDescription) {
-                    siteDescription.setAttribute('value', siteInfo[site].description);
+                // Update site description in overlay
+                if (overlaySiteDescription) {
+                    overlaySiteDescription.textContent = siteInfo[currentSite].description;
                 }
                 
-                // Update instruction text based on site
-                if (instructionText) {
-                    instructionText.setAttribute('value', `Exploring: ${siteInfo[site].name} | Use arrow buttons to navigate`);
-                }
-                
-                console.log('Skybox and text updated for:', siteInfo[site].name);
+                // Update counter
+                updateCounter();
             }
         }
         
@@ -490,7 +547,7 @@
                 const prevIndex = (currentIndex - 1 + siteOrder.length) % siteOrder.length;
                 currentSite = siteOrder[prevIndex];
                 changeLocation(currentSite);
-                updateCounter();
+                updateUI();
                 
                 // Debounce clicks
                 canClick = false;
@@ -507,7 +564,7 @@
                 const nextIndex = (currentIndex + 1) % siteOrder.length;
                 currentSite = siteOrder[nextIndex];
                 changeLocation(currentSite);
-                updateCounter();
+                updateUI();
                 
                 // Debounce clicks
                 canClick = false;
@@ -531,6 +588,11 @@
                     navigateToPrevSite();
                 } else if (event.key === 'ArrowRight') {
                     console.log('Right arrow pressed - next site');
+                    navigateToNextSite();
+                } else if (event.key === ' ' || event.key === 'Spacebar' || event.code === 'Space') {
+                    // Spacebar to go to next site
+                    event.preventDefault(); // Prevent page scrolling
+                    console.log('Spacebar pressed - next site');
                     navigateToNextSite();
                 } else if (event.key === 'Escape') {
                     console.log('Escape pressed - closing VR');
